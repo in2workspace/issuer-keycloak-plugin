@@ -5,7 +5,7 @@ variables:
   - name: registryName
     value: 'acrsharediepdev'
   - name: imageName
-    value: '{issuer_keycloak}'                                            #Name Convention que se establezca
+    value: '{gencat-iep-issuer-user-registry}'                                            #Name Convention que se establezca
   - name: azureSubscription
     value: 'service-endpoint-bs-tf-deploy-apps-iep-dev'
   - name: appServiceName
