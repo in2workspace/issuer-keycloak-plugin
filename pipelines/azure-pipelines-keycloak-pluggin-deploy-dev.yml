@@ -9,7 +9,7 @@ variables:
   - name: azureSubscription
     value: 'service-endpoint-bs-tf-deploy-apps-iep-dev'
   - name: appServiceName
-    value: 'app-cross-keycloak-ms-iep-dev.azurewebsites.net'                                       #El que toque respecto al AppService definido
+    value: 'app-cross-keycloak-ms-iep-dev'                                       #El que toque respecto al AppService definido
 
 pool:
   vmImage: ubuntu-latest
