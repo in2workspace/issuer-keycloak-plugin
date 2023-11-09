@@ -1,0 +1,51 @@
+trigger:
+  - none
+
+variables:
+  sonarEndpoint: 'SonarCloud'
+  sonarOrganization: 'in2dome'
+  sonarProjectKey: 'in2Dome_in2-dome-keycloak_pluggin'
+  sonarProjectName: 'in2-dome-keycloak_pluggin'
+    
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - stage: Build
+    pool:
+      vmImage: ubuntu-latest
+    jobs:
+      - job:
+        displayName:  Build, Unit Tests & Code Analysis
+        steps:
+        - checkout: self
+          fetchDepth: 0
+        - task: SonarCloudPrepare@1
+          displayName: "SonarCloud Prepare"
+          inputs:
+            SonarCloud: $(sonarEndpoint)
+            organization: $(sonarOrganization)
+            scannerMode: 'CLI'
+            configMode: 'manual'
+            cliProjectKey: $(sonarProjectKey)
+            cliProjectName: $(sonarProjectName)
+            cliSources: './src/main/java'
+            extraProperties: 'sonar.java.binaries=./target/classes'
+        - task: Maven@3
+          displayName: "Maven Build & Unit Tests"
+          inputs:
+              mavenPomFile: 'pom.xml'
+              mavenOptions: '-Xmx3072m'
+              javaHomeOption: 'JDKVersion'
+              jdkVersionOption: '1.11'  
+              jdkArchitectureOption: 'x64'
+              mavenAuthenticateFeed: true
+              publishJUnitResults: false
+              testResultsFiles: '**/surefire-reports/TEST-*.xml'
+              goals: 'clean test package'
+        - task: SonarCloudAnalyze@1
+          displayName: "SonarCloud Analyze"
+        - task: SonarCloudPublish@1
+          displayName: "SonarCloud Publish"
+          inputs:
+            pollingTimeoutSec: '300'
