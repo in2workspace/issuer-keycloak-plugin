@@ -5,11 +5,11 @@ variables:
   - name: registryName
     value: 'acrsharediepdev'
   - name: imageName
-    value: '{gencat-iep-issuer-user-registry}'                                            #Name Convention que se establezca
+    value: 'gencat-iep-issuer-user-registry'                                            #Name Convention que se establezca
   - name: azureSubscription
     value: 'service-endpoint-bs-tf-deploy-apps-iep-dev'
   - name: appServiceName
-    value: '{app-cross-keycloak-ms-iep-dev.azurewebsites.net}'                                       #El que toque respecto al AppService definido
+    value: 'app-cross-keycloak-ms-iep-dev.azurewebsites.net'                                       #El que toque respecto al AppService definido
 
 pool:
   vmImage: ubuntu-latest
