@@ -425,7 +425,7 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 			}
 			return nonceList;
 		} catch (Exception e) {
-			throw new ErrorResponseException("Communication failed", "Error sending data to issuer",
+			throw new ErrorResponseException("Communication failed", "Error sending data to issuer: " + e.getMessage(),
 					Response.Status.BAD_REQUEST);
 		}
 	}
