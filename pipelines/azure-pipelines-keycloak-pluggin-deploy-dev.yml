@@ -34,7 +34,7 @@ steps:
       cliProjectKey: 'in2Gencat_gencat-iep-issuer-keycloak-ms'
       cliProjectName: 'gencat-iep-issuer-keycloak-ms'
       cliSources: './src/main/java'
-      extraProperties: 'sonar.java.binaries=target/classes'
+      extraProperties: 'sonar.java.binaries=$(Build.SourcesDirectory)'
   - task: SonarCloudAnalyze@1
     displayName: "SonarCloud Analyze"
   - task: SonarCloudPublish@1
