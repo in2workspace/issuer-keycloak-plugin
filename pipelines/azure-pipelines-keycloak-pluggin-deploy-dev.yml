@@ -5,11 +5,11 @@ variables:
   - name: registryName
     value: 'acrsharediepdev'
   - name: imageName
-    value: 'gencat-iep-issuer-user-registry'                                            #Name Convention que se establezca
+    value: 'gencat-iep-issuer-user-registry'
   - name: azureSubscription
     value: 'service-endpoint-bs-tf-deploy-apps-iep-dev'
   - name: containerServiceName
-    value: 'aca-cross-keycloak-ms-iep-dev'                                       #El que toque respecto al AppService definido
+    value: 'aca-cross-keycloak-ms-iep-dev'
   - name: resourceGroupName
     value: 'rg-cross-iep-dev'
 
@@ -24,6 +24,23 @@ steps:
       scriptType: 'bash'
       scriptLocation: 'inlineScript'
       inlineScript: 'az acr login --name $(registryName)'
+  - task: SonarCloudPrepare@1
+    displayName: "SonarCloud prepare"
+    inputs:
+      SonarCloud: 'Sonarcloud'
+      organization: 'in2gencat'
+      scannerMode: 'CLI'
+      configMode: 'manual'
+      cliProjectKey: 'in2Gencat_gencat-iep-issuer-keycloak-ms'
+      cliProjectName: 'gencat-iep-issuer-keycloak-ms'
+      cliSources: './src/main/java'
+      extraProperties: 'sonar.java.binaries=target/classes'
+  - task: SonarCloudAnalyze@1
+    displayName: "SonarCloud Analyze"
+  - task: SonarCloudPublish@1
+    displayName: "SonarCloud publish"
+    inputs:
+      pollingTimeoutSec: '300'
   - task: AzureCLI@2
     displayName: AZ ACR Build
     inputs:
