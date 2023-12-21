@@ -5,7 +5,7 @@ variables:
   - name: registryName
     value: 'acrsharediepdev'
   - name: imageName
-    value: 'gencat-iep-issuer-user-registry'
+    value: 'gencat-iep-issuer-keycloak-ms'
   - name: azureSubscription
     value: 'service-endpoint-bs-tf-deploy-apps-iep-dev'
   - name: containerServiceName
