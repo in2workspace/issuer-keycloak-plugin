@@ -1,0 +1,59 @@
+trigger:
+  - develop
+
+variables:
+  - name: registryName
+    value: 'epudevcr01'
+  - name: imageName
+    value: 'gencat-iep-issuer-keycloak-ms'
+  - name: azureSubscription
+    value: 'service-endpoint-bs-tf-deploy-apps-iep-gene-demo-dev'
+  - name: containerServiceName
+    value: 'epu-dev-ca-14'
+  - name: resourceGroupName
+    value: 'epu-dev-rg'
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: AzureCLI@2
+    displayName: AZ ACR Login
+    inputs:
+      azureSubscription: $(azureSubscription)
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: 'az acr login --name $(registryName)'
+  - task: SonarCloudPrepare@1
+    displayName: "SonarCloud prepare"
+    inputs:
+      SonarCloud: 'Sonarcloud'
+      organization: 'in2gencat'
+      scannerMode: 'CLI'
+      configMode: 'manual'
+      cliProjectKey: 'in2Gencat_gencat-iep-issuer-keycloak-ms'
+      cliProjectName: 'gencat-iep-issuer-keycloak-ms'
+      cliSources: './src/main/java'
+      extraProperties: 'sonar.java.binaries=$(Build.SourcesDirectory)'
+  - task: SonarCloudAnalyze@1
+    displayName: "SonarCloud Analyze"
+  - task: SonarCloudPublish@1
+    displayName: "SonarCloud publish"
+    inputs:
+      pollingTimeoutSec: '300'
+  - task: AzureCLI@2
+    displayName: AZ ACR Build
+    inputs:
+      azureSubscription: $(azureSubscription)
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: 'az acr build -t $(imageName):$(Build.BuildId) -t $(imageName):$(Build.BuildId) -r $(registryName) -f Dockerfile .'
+      useGlobalConfig: true
+      workingDirectory: '$(Build.SourcesDirectory)'
+  - task: AzureContainerApps@1
+    displayName: Deploy to Azure Container App
+    inputs:
+      azureSubscription: '$(azureSubscription)'
+      containerAppName: '$(containerServiceName)'
+      resourceGroup: '$(resourceGroupName)'
+      imageToDeploy: '$(registryName).azurecr.io/$(imageName):$(Build.BuildId)'
