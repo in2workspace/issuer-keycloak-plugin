@@ -839,10 +839,10 @@
       "redirectUris": [
         "http://localhost:4203",
         "http://localhost:4201",
-        "https://aca-wallet-wda-spa-iep-dev.ashyflower-0d9cd072.westeurope.azurecontainerapps.io",
+        "https://epu-dev-app-01.azurewebsites.net",
         "https://issuerapidev.in2.es/*",
         "https://issueridp.dev.in2.es",
-        "https://aca-issuer-vci-spa-iep-dev.ashyflower-0d9cd072.westeurope.azurecontainerapps.io",
+        "https://epu-dev-app-03.azurewebsites.net",
         "http://issuer-api:8081/*",
         "http://localhost:4200"
       ],
@@ -850,14 +850,12 @@
         "",
         "http://localhost:4203",
         "http://localhost:4201",
-        "https://app-wallet-wda-spa-iep-dev.azurewebsites.net",
-        "https://aca-wallet-wda-spa-iep-dev.ashyflower-0d9cd072.westeurope.azurecontainerapps.io",
+        "https://epu-dev-app-01.azurewebsites.net",
         "https://issueridp.dev.in2.es",
         "https://walletidp.dev.in2.es",
-        "https://aca-issuer-vci-spa-iep-dev.ashyflower-0d9cd072.westeurope.azurecontainerapps.io",
+        "https://epu-dev-app-03.azurewebsites.net",
         "https://issuerdev.in2.es/*",
-        "http://localhost:4200",
-        "https://app-issuer-vci-spa-iep-dev.azurewebsites.net"
+        "http://localhost:4200"
       ],
       "notBefore": 0,
       "bearerOnly": false,
@@ -968,12 +966,12 @@
         "https://walletidp.dev.in2.es",
         "http://localhost:4200/*",
         "http://localhost:4201/*",
-        "https://aca-wallet-wda-spa-iep-dev.ashyflower-0d9cd072.westeurope.azurecontainerapps.io/*",
+        "https://epu-dev-app-01.azurewebsites.net/*",
         "https://issueridp.dev.in2.es/*"
       ],
       "webOrigins": [
         "http://localhost:4201",
-        "https://aca-wallet-wda-spa-iep-dev.ashyflower-0d9cd072.westeurope.azurecontainerapps.io",
+        "https://epu-dev-app-01.azurewebsites.net",
         "https://walletidp.dev.in2.es",
         "https://issueridp.dev.in2.es",
         "http://localhost:4200"
@@ -992,7 +990,7 @@
         "oidc.ciba.grant.enabled": "false",
         "client.secret.creation.time": "1702392014",
         "backchannel.logout.session.required": "true",
-        "post.logout.redirect.uris": "http://localhost:4201/*##https://aca-wallet-wda-spa-iep-dev.ashyflower-0d9cd072.westeurope.azurecontainerapps.io/*",
+        "post.logout.redirect.uris": "http://localhost:4201/*##https://epu-dev-app-01.azurewebsites.net/*",
         "display.on.consent.screen": "false",
         "oauth2.device.authorization.grant.enabled": "false",
         "use.jwks.url": "false",
