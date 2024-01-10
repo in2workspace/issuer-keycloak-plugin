@@ -11,7 +11,80 @@ tags:
     description: Endpoints defined by the OpenID for Verifiable Credential Issuance spec
   - name: IssuerPlugin
     description: Endpoints provided by the plugin for convenience, but not defined by the spec
+  - name: Public
+    description: Public Endpoints
 paths:
+  /protocol/openid-connect/token:
+    post:
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                client_id:
+                  type: string
+                username:
+                  type: string
+                password:
+                  type: string
+                client_secret:
+                  type: string
+                grant_type:
+                  type: string
+      tags:
+        - Public
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                access_token: <your_access_token>
+                token_type: Bearer
+                expires_in: 3600
+                refresh_token: <your_refresh_token>
+                refresh_expires_in: 1800
+                not-before-policy: 0
+                session_state: 721cc9cc-66de-83fc-a0f8-24e13al2a9e1
+                scope: profile email
+  /protocol/openid-connect/certs:
+    get:
+      summary: Get OpenID Connect Certificates
+      tags:
+        - Public
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                keys:
+                  - kty: RSA
+                    kid: <your_key_id>
+                    use: sig
+                    n: <your_modulus>
+                    e: <your_exponent>
+                    x5c:
+                      - <your_x509_certificate>
+                    x5t: <your_x509_thumbprint>
+                    x5t#S256: <your_x509_sha256_thumbprint>
+  /protocol/openid-connect/userinfo:
+    get:
+      summary: Get User Information
+      tags:
+        - Public
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                sub: <user_subject>
+                preferred_username: <preferred_username>
+                email: <user_email>
+      security:
+        - BearerAuth: [ read ]
   /issuer:
     get:
       tags:
@@ -77,6 +150,7 @@ paths:
     get:
       tags:
         - OIDC4VCI
+        - Public
       parameters:
         - $ref: '#/components/parameters/IssuerDid'
       operationId: getOpenIdConfig
@@ -188,6 +262,10 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
 
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: Bearer
   parameters:
     IssuerDid:
       description: Did configured for the requested issuer
