@@ -1,0 +1,178 @@
+openapi: 3.0.3
+info:
+  title: Keycloak VC issuer plugin
+  description: API spec for the Keycloak issuer plugin
+  version: 0.0.1
+externalDocs:
+  description: API Documentation
+  url: https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html
+tags:
+  - name: Public
+    description: Public Endpoints
+paths:
+  /.well-known/openid-configuration:
+    get:
+      tags:
+        - OIDC4VCI
+        - Public
+      parameters:
+        - $ref: '#/components/parameters/IssuerDid'
+      operationId: getOpenIdConfig
+      summary: provide SIOP-2 metadata
+      responses:
+        '200':
+          description: OpenID Provider Metadata
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SIOPMetadata'
+  /protocol/openid-connect/token:
+    post:
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                client_id:
+                  type: string
+                username:
+                  type: string
+                password:
+                  type: string
+                client_secret:
+                  type: string
+                grant_type:
+                  type: string
+      tags:
+        - Public
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                access_token: <your_access_token>
+                token_type: Bearer
+                expires_in: 3600
+                refresh_token: <your_refresh_token>
+                refresh_expires_in: 1800
+                not-before-policy: 0
+                session_state: 721cc9cc-66de-83fc-a0f8-24e13al2a9e1
+                scope: profile email
+  /protocol/openid-connect/certs:
+    get:
+      summary: Get OpenID Connect Certificates
+      tags:
+        - Public
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                keys:
+                  - kty: RSA
+                    kid: <your_key_id>
+                    use: sig
+                    n: <your_modulus>
+                    e: <your_exponent>
+                    x5c:
+                      - <your_x509_certificate>
+                    x5t: <your_x509_thumbprint>
+                    x5t#S256: <your_x509_sha256_thumbprint>
+  /protocol/openid-connect/userinfo:
+    get:
+      summary: Get User Information
+      tags:
+        - Public
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              example:
+                sub: <user_subject>
+                preferred_username: <preferred_username>
+                email: <user_email>
+      security:
+        - BearerAuth: [read]
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: Bearer
+  parameters:
+    IssuerDid:
+      description: Did configured for the requested issuer
+      name: issuerDid
+      in: path
+      required: true
+      schema:
+        type: string
+        example: did:key:z6MkqmaCT2JqdUtLeKah7tEVfNXtDXtQyj4yxEgV11Y5CqUa
+  schemas:
+    SignatureAlgorithm:
+      type: string
+      enum: [ "RS256","ES256","ES256K","EdDSA" ]
+    SIOPMetadata:
+      type: object
+      properties:
+        authorization_endpoint:
+          description: URL of the Self-Issued OP used by the RP to perform Authentication of the End-User. Can be custom URI scheme, or Universal Links/App links.
+          type: string
+          format: url
+          example: "https://my-keycloak.org"
+        issuer:
+          description: URL using the https scheme with no query or fragment component that the Self-Issued OP asserts as its Issuer Identifier. MUST be identical to the iss Claim value in ID Tokens issued from this Self-Issued OP.
+          type: string
+          format: url
+          example: "https://kc-one.batterypass.fiware.dev/realms/fiware-server/verifiable-credential"
+        response_types_supported:
+          type: array
+          description: A JSON array of strings representing supported response types. MUST be id_token.
+          items:
+            type: string
+            enum: [ "id_token" ]
+        scopes_supported:
+          description: A JSON array of strings representing supported scopes. MUST support the openid scope value
+          type: array
+          items:
+            type: string
+            enum: [ "openid" ]
+        subject_types_supported:
+          description: A JSON array of strings representing supported subject types. Valid values include pairwise and public
+          type: array
+          items:
+            type: string
+            enum: [ "pairwise", "public" ]
+        id_token_signing_alg_values_supported:
+          description: A JSON array containing a list of the JWS signing algorithms (alg values) supported by the OP for the ID Token to encode the Claims in a JWT [RFC7519]. Valid values include RS256, ES256, ES256K, and EdDSA.
+          type: array
+          items:
+            $ref: '#/components/schemas/SignatureAlgorithm'
+          example:
+            - "EdDSA"
+            - "ES256"
+        request_object_signing_alg_values_supported:
+          description: A JSON array containing a list of the JWS signing algorithms (alg values) supported by the OP for Request Objects, which are described in Section 6.1 of [OpenID.Core]. Valid values include none, RS256, ES256, ES256K, and EdDSA
+          type: array
+          items:
+            $ref: '#/components/schemas/SignatureAlgorithm'
+        subject_syntax_types_supported:
+          type: array
+          items:
+            type: string
+            enum:
+              - "urn:ietf:params:oauth:jwk-thumbprint"
+              - "did:key"
+          example:
+            - "did:key"
+      required:
+        - authorization_endpoint
+        - issuer
+        - response_types_supported
+        - scopes_supported
+        - subject_types_supported
+        - id_token_signing_alg_values_supported
+        - request_object_signing_alg_values_supported
