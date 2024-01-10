@@ -3,6 +3,9 @@ info:
   title: Keycloak VC issuer plugin
   description: API spec for the Keycloak issuer plugin
   version: 0.0.1
+servers:
+  - url: http://localhost:8080
+    description: Local development server
 externalDocs:
   description: API Documentation
   url: https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html
@@ -12,6 +15,27 @@ tags:
   - name: IssuerPlugin
     description: Endpoints provided by the plugin for convenience, but not defined by the spec
 paths:
+  /protocol/openid-connect/token:
+    get:
+      tags:
+        - Public
+      responses:
+        '200':
+          description: OpenID Token
+  /protocol/openid-connect/certs:
+    get:
+      tags:
+        - Public
+      responses:
+        '200':
+          description: OpenID Certs
+  /protocol/openid-connect/userinfo:
+    get:
+      tags:
+        - Public
+      responses:
+        '200':
+          description: OpenID User Info
   /issuer:
     get:
       tags:
@@ -77,6 +101,7 @@ paths:
     get:
       tags:
         - OIDC4VCI
+        - Public
       parameters:
         - $ref: '#/components/parameters/IssuerDid'
       operationId: getOpenIdConfig
