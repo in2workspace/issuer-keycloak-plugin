@@ -5,6 +5,7 @@ COPY pom.xml .
 RUN mvn dependency:go-offline -B
 COPY src ./src
 COPY /api/api.yaml ./api/
+COPY /api/openapi.yaml ./api/
 RUN mvn clean install
 
 
