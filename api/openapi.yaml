@@ -3,6 +3,8 @@ info:
   title: Keycloak VC issuer plugin
   description: API spec for the Keycloak issuer plugin
   version: 0.0.1
+servers:
+  - url: https://aca-cross-keycloak-ms-iep-dev.ashyflower-0d9cd072.westeurope.azurecontainerapps.io/realms/EAAProvider
 externalDocs:
   description: API Documentation
   url: https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html
@@ -10,10 +12,9 @@ tags:
   - name: Public
     description: Public Endpoints
 paths:
-  /.well-known/openid-configuration:
+  /{issuerDid}/.well-known/openid-configuration:
     get:
       tags:
-        - OIDC4VCI
         - Public
       parameters:
         - $ref: '#/components/parameters/IssuerDid'
