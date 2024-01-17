@@ -3,21 +3,290 @@ info:
   title: Keycloak VC issuer plugin
   description: API spec for the Keycloak issuer plugin
   version: 0.0.1
-servers:
-  - url: https://aca-cross-keycloak-ms-iep-dev.ashyflower-0d9cd072.westeurope.azurecontainerapps.io/realms/EAAProvider
 externalDocs:
   description: API Documentation
   url: https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html
 tags:
   - name: Public
     description: Public Endpoints
+  - name: CSS
+    description: CSS Endpoints
+  - name: Img
+    description: Img Endpoints
+  - name: Font
+    description: Font Endpoints
 paths:
-  /{issuerDid}/.well-known/openid-configuration:
+  /resources/nsyq5/common/keycloak/node_modules/patternfly/dist/fonts/OpenSans-Bold-webfont.woff2:
     get:
       tags:
         - Public
+        - Font
+      summary: Get Font File
+      description: Retrieve the OpenSans-Bold-webfont.woff2 font file from the specified endpoint.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            'application/font-woff2':
+              schema:
+                type: string  # Assuming binary data (base64-encoded)
+                format: binary
+  /resources/nsyq5/login/keycloak/img/favicon.ico:
+    get:
+      tags:
+        - Public
+        - Img
+      summary: Get Favicon
+      description: Retrieve the favicon.ico image from the specified endpoint.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            'image/x-icon':
+              schema:
+                type: string  # Assuming binary data (base64-encoded)
+                format: binary
+  /resources/nsyq5/common/keycloak/node_modules/patternfly/dist/fonts/OpenSans-Light-webfont.woff2:
+    get:
+      tags:
+        - Public
+        - Font
+      summary: Get Font File
+      description: Retrieve the OpenSans-Light-webfont.woff2 font file from the specified endpoint.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            'application/font-woff2':
+              schema:
+                type: string  # Assuming binary data (base64-encoded)
+                format: binary
+  /resources/nsyq5/common/keycloak/node_modules/patternfly/dist/fonts/OpenSans-Regular-webfont.woff2:
+    get:
+      tags:
+        - Public
+        - Font
+      summary: Get Font File
+      description: Retrieve the OpenSans-Regular-webfont.woff2 font file from the specified endpoint.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            'application/font-woff2':
+              schema:
+                type: string  # Assuming binary data (base64-encoded)
+                format: binary
+  /resources/nsyq5/login/keycloak/img/keycloak-bg.png:
+    get:
+      tags:
+        - Public
+        - Img
+      summary: Get Image
+      description: Retrieve the keycloak-bg.png image from the specified endpoint.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            'image/png':
+              schema:
+                type: string  # Assuming binary data (base64-encoded)
+                format: binary
+  /resources/nsyq5/login/keycloak/css/login.css:
+    get:
+      tags:
+        - Public
+        - CSS
+      summary: Get CSS file
+      description: Retrieve the login.css file from the specified endpoint.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            'text/css':
+              schema:
+                type: string
+  /resources/nsyq5/common/keycloak/lib/pficon/pficon.css:
+    get:
+      tags:
+        - Public
+        - CSS
+      summary: Get CSS file
+      description: Retrieve the pficon.css file from the specified endpoint.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            'text/css':
+              schema:
+                type: string
+  /resources/nsyq5/common/keycloak/node_modules/patternfly/dist/css/patternfly-additions.min.css:
+    get:
+      tags:
+        - Public
+        - CSS
+      summary: Get CSS file
+      description: Retrieve the patternfly-additions.min.css file from the specified endpoint.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            'text/css':
+              schema:
+                type: string
+  /resources/nsyq5/common/keycloak/node_modules/patternfly/dist/css/patternfly.min.css:
+    get:
+      tags:
+        - Public
+        - CSS
+      summary: Get CSS file
+      description: Retrieve the patternfly.min.css file from the specified endpoint.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            'text/css':
+              schema:
+                type: string
+  /resources/nsyq5/common/keycloak/web_modules/@patternfly/react-core/dist/styles/app.css:
+    get:
+      tags:
+        - Public
+        - CSS
+      summary: Get CSS file
+      description: Retrieve the app.css file from the specified endpoint.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            'text/css':
+              schema:
+                type: string
+  /resources/nsyq5/common/keycloak/web_modules/@patternfly/react-core/dist/styles/base.css:
+    get:
+      tags:
+        - Public
+        - CSS
+      summary: Get CSS file
+      description: Retrieve the base.css file from the specified endpoint.
+      responses:
+        '200':
+          description: Successful response
+          content:
+            'text/css':
+              schema:
+                type: string
+  /realms/EAAProvider/broker/gicar/endpoint:
+    post:
+      tags:
+        - Public
+      summary: Description of the endpoint
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                RelayState:
+                  type: string
+                SAMLResponse:
+                  type: string
+      responses:
+        '200':
+          description: Successful response
+  /realms/EAAProvider/broker/gicar/login:
+    get:
+      tags:
+        - Public
+      summary: GICAR Login
       parameters:
-        - $ref: '#/components/parameters/IssuerDid'
+        - name: session_code
+          in: query
+          required: true
+          schema:
+            type: string
+          example: nltTOaaxTNFq3u642NPDBlSBxqscRrorIg0mkX6thuM
+        - name: client_id
+          in: query
+          required: true
+          schema:
+            type: string
+          example: oidc4vci-wallet-client
+        - name: tab_id
+          in: query
+          required: true
+          schema:
+            type: string
+          example: SDgCS1bH4pU
+      responses:
+        '200':
+          description: Successful response
+  /realms/EAAProvider/protocol/openid-connect/auth:
+    get:
+      tags:
+        - Public
+      summary: OIDC Authentication
+      parameters:
+        - name: client_id
+          in: query
+          required: true
+          schema:
+            type: string
+          example: oidc4vci-wallet-client
+        - name: redirect_uri
+          in: query
+          required: true
+          schema:
+            type: string
+          example: https://walletidp.dev.in2.es/callback
+        - name: response_type
+          in: query
+          required: true
+          schema:
+            type: string
+          example: code
+        - name: scope
+          in: query
+          required: true
+          schema:
+            type: string
+          example: openid gicar_id_token
+        - name: nonce
+          in: query
+          required: true
+          schema:
+            type: string
+          example: ba464f1a81dcbd46a4e5dd7cec7fc5e77c8nvyU8D
+        - name: state
+          in: query
+          required: true
+          schema:
+            type: string
+          example: 33c5856ce4c973d65de165270bafaf4df2fw3nXh1
+        - name: code_challenge
+          in: query
+          required: true
+          schema:
+            type: string
+          example: k54-68f_grslUymjC3bvMTtfHNJcLFJZDP1dU-NMpj0
+        - name: code_challenge_method
+          in: query
+          required: true
+          schema:
+            type: string
+          example: S256
+        - name: kc_idp_hint
+          in: query
+          required: true
+          schema:
+            type: string
+          example: gicar
+      responses:
+        '200':
+          description: Successful response
+  /realms/EAAProvider/.well-known/openid-configuration:
+    get:
+      tags:
+        - Public
       operationId: getOpenIdConfig
       summary: provide SIOP-2 metadata
       responses:
@@ -27,7 +296,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SIOPMetadata'
-  /protocol/openid-connect/token:
+  /realms/EAAProvider/protocol/openid-connect/token:
     post:
       requestBody:
         content:
@@ -61,7 +330,7 @@ paths:
                 not-before-policy: 0
                 session_state: 721cc9cc-66de-83fc-a0f8-24e13al2a9e1
                 scope: profile email
-  /protocol/openid-connect/certs:
+  /realms/EAAProvider/protocol/openid-connect/certs:
     get:
       summary: Get OpenID Connect Certificates
       tags:
@@ -82,7 +351,7 @@ paths:
                       - <your_x509_certificate>
                     x5t: <your_x509_thumbprint>
                     x5t#S256: <your_x509_sha256_thumbprint>
-  /protocol/openid-connect/userinfo:
+  /realms/EAAProvider/protocol/openid-connect/userinfo:
     get:
       summary: Get User Information
       tags:
