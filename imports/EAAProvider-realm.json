@@ -331,6 +331,16 @@
           "attributes": {}
         }
       ],
+      "oidc4vci-proximity-client": [
+        {
+          "id": "cbd57444-aad3-4a05-bfba-58671aa982b7",
+          "name": "uma_protection",
+          "composite": false,
+          "clientRole": true,
+          "containerId": "ef3ae743-6c38-4273-8188-2c6806bc7411",
+          "attributes": {}
+        }
+      ],
       "security-admin-console": [],
       "admin-cli": [],
       "account-console": [],
@@ -599,6 +609,27 @@
       "realmRoles": ["default-roles-eaaprovider"],
       "clientRoles": {
         "oidc4vci-client": ["uma_protection"]
+      },
+      "notBefore": 0,
+      "groups": []
+    },
+    {
+      "id": "35bdc3e4-91db-425a-bf71-23c8fec63086",
+      "createdTimestamp": 1705565841472,
+      "username": "service-account-oidc4vci-proximity-client",
+      "enabled": true,
+      "totp": false,
+      "emailVerified": false,
+      "serviceAccountClientId": "oidc4vci-proximity-client",
+      "disableableCredentialTypes": [],
+      "requiredActions": [],
+      "realmRoles": [
+        "default-roles-eaaprovider"
+      ],
+      "clientRoles": {
+        "oidc4vci-proximity-client": [
+          "uma_protection"
+        ]
       },
       "notBefore": 0,
       "groups": []
@@ -956,6 +987,140 @@
         "policyEnforcementMode": "ENFORCING",
         "resources": [],
         "policies": [],
+        "scopes": [],
+        "decisionStrategy": "UNANIMOUS"
+      }
+    },
+    {
+      "id": "ef3ae743-6c38-4273-8188-2c6806bc7411",
+      "clientId": "oidc4vci-proximity-client",
+      "name": "",
+      "description": "",
+      "surrogateAuthRequired": false,
+      "enabled": true,
+      "alwaysDisplayInConsole": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "qVB2taQhqWmVndVIG5QR1INH8rfsbTrS",
+      "redirectUris": [],
+      "webOrigins": [],
+      "notBefore": 0,
+      "bearerOnly": false,
+      "consentRequired": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true,
+      "authorizationServicesEnabled": true,
+      "publicClient": false,
+      "frontchannelLogout": true,
+      "protocol": "openid-connect",
+      "attributes": {
+        "oidc.ciba.grant.enabled": "false",
+        "oauth2.device.authorization.grant.enabled": "false",
+        "client.secret.creation.time": "1705565841",
+        "backchannel.logout.session.required": "true",
+        "backchannel.logout.revoke.offline.tokens": "false"
+      },
+      "authenticationFlowBindingOverrides": {},
+      "fullScopeAllowed": true,
+      "nodeReRegistrationTimeout": -1,
+      "protocolMappers": [
+        {
+          "id": "7184316f-7538-427f-a3de-96b469df5cd2",
+          "name": "Client ID",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientId",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientId",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "0b7fb7a1-96e9-4f06-acea-0cf8b4fb40de",
+          "name": "Client Host",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientHost",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientHost",
+            "jsonType.label": "String"
+          }
+        },
+        {
+          "id": "022047b8-4c61-42bc-83ae-c593fa975962",
+          "name": "Client IP Address",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usersessionmodel-note-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.session.note": "clientAddress",
+            "id.token.claim": "true",
+            "access.token.claim": "true",
+            "claim.name": "clientAddress",
+            "jsonType.label": "String"
+          }
+        }
+      ],
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ],
+      "authorizationSettings": {
+        "allowRemoteResourceManagement": true,
+        "policyEnforcementMode": "ENFORCING",
+        "resources": [
+          {
+            "name": "Default Resource",
+            "type": "urn:oidc4vci-proximity-client:resources:default",
+            "ownerManagedAccess": false,
+            "attributes": {},
+            "_id": "9281986d-ae57-4652-b5ca-5aabc42804fc",
+            "uris": [
+              "/*"
+            ]
+          }
+        ],
+        "policies": [
+          {
+            "id": "746c2a9b-d2e0-44a4-b212-7ed6eb60524c",
+            "name": "Default Policy",
+            "description": "A policy that grants access only for users within this realm",
+            "type": "js",
+            "logic": "POSITIVE",
+            "decisionStrategy": "AFFIRMATIVE",
+            "config": {
+              "code": "// by default, grants any permission associated with this policy\n$evaluation.grant();\n"
+            }
+          },
+          {
+            "id": "af5622c0-5b62-4c68-a79b-db07aa431074",
+            "name": "Default Permission",
+            "description": "A permission that applies to the default resource type",
+            "type": "resource",
+            "logic": "POSITIVE",
+            "decisionStrategy": "UNANIMOUS",
+            "config": {
+              "defaultResourceType": "urn:oidc4vci-proximity-client:resources:default",
+              "applyPolicies": "[\"Default Policy\"]"
+            }
+          }
+        ],
         "scopes": [],
         "decisionStrategy": "UNANIMOUS"
       }
