@@ -1,0 +1,41 @@
+trigger: none
+
+variables:
+  - name: registryName
+    value: 'epuprecr01'
+  - name: imageName
+    value: 'gencat-iep-issuer-keycloak-ms'
+  - name: azureSubscription
+    value: 'ctt-epu-pre-serviceconnection'
+  - name: containerServiceName
+    value: 'epu-pre-ca-14'
+  - name: resourceGroupName
+    value: 'epu-pre-rg'
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - task: AzureCLI@2
+    displayName: AZ ACR Login
+    inputs:
+      azureSubscription: $(azureSubscription)
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: 'az acr login --name $(registryName)'
+  - task: AzureCLI@2
+    displayName: AZ ACR Build
+    inputs:
+      azureSubscription: $(azureSubscription)
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: 'az acr build -t $(imageName):$(Build.BuildId) -t $(imageName):$(Build.BuildId) -r $(registryName) -f Dockerfile .'
+      useGlobalConfig: true
+      workingDirectory: '$(Build.SourcesDirectory)'
+  - task: AzureContainerApps@1
+    displayName: Deploy to Azure Container App
+    inputs:
+      azureSubscription: '$(azureSubscription)'
+      containerAppName: '$(containerServiceName)'
+      resourceGroup: '$(resourceGroupName)'
+      imageToDeploy: '$(registryName).azurecr.io/$(imageName):$(Build.BuildId)'
