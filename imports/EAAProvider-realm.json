@@ -111,6 +111,15 @@
         "clientRole": false,
         "containerId": "0818fb3e-fd40-48d3-822f-a7d081862282",
         "attributes": {}
+      },
+      {
+        "id": "5826a491-567c-4878-9222-7fdd564ff492",
+        "name": "credential_revocation_admin",
+        "description": "Enables users to manage credential revocations.",
+        "composite": false,
+        "clientRole": false,
+        "containerId": "0818fb3e-fd40-48d3-822f-a7d081862282",
+        "attributes": {}
       }
     ],
     "client": {
@@ -502,7 +511,7 @@
       ],
       "disableableCredentialTypes": [],
       "requiredActions": [],
-      "realmRoles": ["admin"],
+      "realmRoles": ["admin", "credential_revocation_admin"],
       "notBefore": 0,
       "groups": []
     },
