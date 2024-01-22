@@ -1,5 +1,4 @@
-trigger:
-  - develop
+trigger: none
 
 variables:
   - name: registryName

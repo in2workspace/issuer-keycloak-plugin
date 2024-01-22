@@ -840,6 +840,7 @@
         "http://localhost:4203",
         "http://localhost:4201",
         "https://epu-dev-app-01.azurewebsites.net/*",
+        "https://epu-dev-app-02.azurewebsites.net/*",
         "https://issuerapidev.in2.es/*",
         "https://issueridp.dev.in2.es",
         "https://epu-dev-app-03.azurewebsites.net/*",
@@ -855,7 +856,7 @@
         "https://epu-dev-app-03.azurewebsites.net",
         "https://issuerdev.in2.es/*",
         "http://localhost:4200",
-        "https://epu-dev-app-01.azurewebsites.net"
+        "https://epu-dev-app-02.azurewebsites.net"
       ],
       "notBefore": 0,
       "bearerOnly": false,
@@ -969,7 +970,8 @@
         "https://epu-dev-app-01.azurewebsites.net/*",
         "https://issueridp.dev.in2.es/*",
         "https://epu-dev-app-03.azurewebsites.net/*",
-        "https://epu-dev-app-02.azurewebsites.net/*"
+        "https://epu-dev-app-02.azurewebsites.net/*",
+        "https://epu-dev-app-01.azurewebsites.net/*"
       ],
       "webOrigins": [
         "http://localhost:4201",
