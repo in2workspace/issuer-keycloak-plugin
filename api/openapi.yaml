@@ -16,6 +16,15 @@ tags:
   - name: Font
     description: Font Endpoints
 paths:
+  /realms/EAAProvider:
+    get:
+      tags:
+        - Public
+      summary: Get EAAProvider Realm
+      description: Retrieves the EAAProvider Realm from a specific URL.
+      responses:
+        '200':
+          description: Successful response
   /resources/nsyq5/common/keycloak/node_modules/patternfly/dist/fonts/OpenSans-Bold-webfont.woff2:
     get:
       tags:
