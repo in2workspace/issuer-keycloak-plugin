@@ -10,7 +10,8 @@ RUN mvn clean install
 
 
 # Segunda etapa: Creación de la imagen de Keycloak
-FROM quay.io/keycloak/keycloak:20.0.3
+#FROM quay.io/keycloak/keycloak:20.0.3
+FROM rafagm/custom-keycloak-logs
 # Copiar el artefacto de la aplicación desde la etapa de compilación
 COPY --from=builder /app/target/classes/keyfile.json /opt/keycloak/providers/keyfile.json
 COPY --from=builder /app/target/in2-issuer-auth-1.0-SNAPSHOT.jar /opt/keycloak/providers/
