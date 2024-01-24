@@ -11,7 +11,7 @@ RUN mvn clean install
 
 # Segunda etapa: Creación de la imagen de Keycloak
 #FROM quay.io/keycloak/keycloak:20.0.3
-FROM rafagm/custom-keycloak-logs:2
+FROM rafagm/custom-keycloak-logs:3
 # Copiar el artefacto de la aplicación desde la etapa de compilación
 COPY --from=builder /app/target/classes/keyfile.json /opt/keycloak/providers/keyfile.json
 COPY --from=builder /app/target/in2-issuer-auth-1.0-SNAPSHOT.jar /opt/keycloak/providers/
@@ -28,4 +28,4 @@ ENV VCISSUER_ISSUER_KEY_FILE="/opt/keycloak/providers/keyfile.json"
 COPY applicationinsights-agent-3.4.8.jar  /build/applicationinsights-agent-3.4.8.jar
 COPY applicationinsights.json /build/applicationinsights.json
 EXPOSE 8088
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start-dev", "--health-enabled=true","--metrics-enabled=true", "--log-level=INFO,org.keycloak.services:trace", "--import-realm"]
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start-dev", "--health-enabled=true","--metrics-enabled=true", "--log-level=INFO,org.keycloak.services:trace,org.keycloak.saml:trace", "--import-realm"]
