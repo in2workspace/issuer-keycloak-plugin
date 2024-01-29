@@ -20,7 +20,6 @@ COPY /imports /opt/keycloak/data/import
 #ENV KC_SPI_THEME_ADMIN_DEFAULT=siop-2
 ENV VCISSUER_ISSUER_DID="did:key:z6MkqmaCT2JqdUtLeKah7tEVfNXtDXtQyj4yxEgV11Y5CqUa"
 ENV VCISSUER_ISSUER_KEY_FILE="/opt/keycloak/providers/keyfile.json"
-ENV KC_HOSTNAME_ADMIN_URL: "https://epu-dev-ca-14.thankfulsand-d95793a6.westeurope.azurecontainerapps.io"
 
 #ADD ./target/classes/keyfile.json /opt/keycloak/providers/keyfile.json
 #ADD ./target/in2-issuer-auth-1.0-SNAPSHOT.jar /opt/keycloak/providers/in2-issuer-auth-1.0-SNAPSHOT.jar
@@ -29,4 +28,4 @@ ENV KC_HOSTNAME_ADMIN_URL: "https://epu-dev-ca-14.thankfulsand-d95793a6.westeuro
 COPY applicationinsights-agent-3.4.8.jar  /build/applicationinsights-agent-3.4.8.jar
 COPY applicationinsights.json /build/applicationinsights.json
 EXPOSE 8088
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start-dev", "--health-enabled=true","--metrics-enabled=true", "--log-level=DEBUG", "--import-realm"]
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start-dev", "--health-enabled=true","--metrics-enabled=true", "--log-level=INFO", "--import-realm"]
