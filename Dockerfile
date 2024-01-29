@@ -20,8 +20,7 @@ COPY /imports /opt/keycloak/data/import
 #ENV KC_SPI_THEME_ADMIN_DEFAULT=siop-2
 ENV VCISSUER_ISSUER_DID="did:key:z6MkqmaCT2JqdUtLeKah7tEVfNXtDXtQyj4yxEgV11Y5CqUa"
 ENV VCISSUER_ISSUER_KEY_FILE="/opt/keycloak/providers/keyfile.json"
-ENV KEYCLOAK_ADMIN: in2admin
-ENV KEYCLOAK_ADMIN_PASSWORD: in2pass
+ENV KC_HOSTNAME_ADMIN_URL: "https://epu-dev-ca-14.thankfulsand-d95793a6.westeurope.azurecontainerapps.io"
 
 #ADD ./target/classes/keyfile.json /opt/keycloak/providers/keyfile.json
 #ADD ./target/in2-issuer-auth-1.0-SNAPSHOT.jar /opt/keycloak/providers/in2-issuer-auth-1.0-SNAPSHOT.jar
