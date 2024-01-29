@@ -11,7 +11,7 @@ RUN mvn clean install
 
 # Segunda etapa: Creación de la imagen de Keycloak
 #FROM quay.io/keycloak/keycloak:20.0.3
-FROM rafagm/custom-keycloak-logs:3
+FROM quay.io/keycloak/keycloak:20.0.3
 # Copiar el artefacto de la aplicación desde la etapa de compilación
 COPY --from=builder /app/target/classes/keyfile.json /opt/keycloak/providers/keyfile.json
 COPY --from=builder /app/target/in2-issuer-auth-1.0-SNAPSHOT.jar /opt/keycloak/providers/
@@ -20,6 +20,8 @@ COPY /imports /opt/keycloak/data/import
 #ENV KC_SPI_THEME_ADMIN_DEFAULT=siop-2
 ENV VCISSUER_ISSUER_DID="did:key:z6MkqmaCT2JqdUtLeKah7tEVfNXtDXtQyj4yxEgV11Y5CqUa"
 ENV VCISSUER_ISSUER_KEY_FILE="/opt/keycloak/providers/keyfile.json"
+ENV KEYCLOAK_ADMIN: in2admin
+ENV KEYCLOAK_ADMIN_PASSWORD: in2pass
 
 #ADD ./target/classes/keyfile.json /opt/keycloak/providers/keyfile.json
 #ADD ./target/in2-issuer-auth-1.0-SNAPSHOT.jar /opt/keycloak/providers/in2-issuer-auth-1.0-SNAPSHOT.jar
