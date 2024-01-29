@@ -29,4 +29,4 @@ ENV KC_HOSTNAME_ADMIN_URL: "https://epu-dev-ca-14.thankfulsand-d95793a6.westeuro
 COPY applicationinsights-agent-3.4.8.jar  /build/applicationinsights-agent-3.4.8.jar
 COPY applicationinsights.json /build/applicationinsights.json
 EXPOSE 8088
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start-dev", "--health-enabled=true","--metrics-enabled=true", "--log-level=INFO,org.keycloak.services:trace,org.keycloak.saml:trace", "--import-realm"]
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start-dev", "--health-enabled=true","--metrics-enabled=true", "--log-level=DEBUG", "--import-realm"]
