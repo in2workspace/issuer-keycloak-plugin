@@ -1080,7 +1080,26 @@
         "phone",
         "offline_access",
         "microprofile-jwt"
-      ]
+      ],
+      "authorizationSettings": {
+        "allowRemoteResourceManagement": true,
+        "policyEnforcementMode": "ENFORCING",
+        "resources": [
+          {
+            "name": "Default Resource",
+            "type": "urn:oidc4vci-proximity-client:resources:default",
+            "ownerManagedAccess": false,
+            "attributes": {},
+            "_id": "9281986d-ae57-4652-b5ca-5aabc42804fc",
+            "uris": [
+              "/*"
+            ]
+          }
+        ],
+        "policies": [],
+        "scopes": [],
+        "decisionStrategy": "UNANIMOUS"
+      }
     },
     {
       "id": "5e881b16-e20d-4b4c-aeba-4970a1368c4c",
