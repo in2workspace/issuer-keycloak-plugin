@@ -1114,7 +1114,7 @@
       "alwaysDisplayInConsole": false,
       "clientAuthenticatorType": "client-secret",
       "redirectUris": [
-        "https://walletidp.dev.in2.es",
+        "https://walletidp.dev.in2.es/*",
         "http://localhost:4200/*",
         "http://localhost:4201/*",
         "https://epu-dev-app-01.azurewebsites.net/*",
