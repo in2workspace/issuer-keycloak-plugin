@@ -2,9 +2,9 @@ trigger: none
 
 variables:
   - name: registryName
-    value: 'acrsharediepdev'
+    value: 'epudevcr01'
   - name: azureSubscription
-    value: 'service-endpoint-bs-tf-deploy-apps-iep-dev'
+    value: 'service-endpoint-bs-tf-deploy-apps-iep-gene-demo-dev'
 
 pool:
   vmImage: ubuntu-latest
