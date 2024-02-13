@@ -24,23 +24,6 @@ steps:
       scriptType: 'bash'
       scriptLocation: 'inlineScript'
       inlineScript: 'az acr login --name $(registryName)'
-  - task: SonarCloudPrepare@1
-    displayName: "SonarCloud prepare"
-    inputs:
-      SonarCloud: 'Sonarcloud'
-      organization: 'in2gencat'
-      scannerMode: 'CLI'
-      configMode: 'manual'
-      cliProjectKey: 'in2Gencat_gencat-iep-issuer-keycloak-ms'
-      cliProjectName: 'gencat-iep-issuer-keycloak-ms'
-      cliSources: './src/main/java'
-      extraProperties: 'sonar.java.binaries=$(Build.SourcesDirectory)'
-  - task: SonarCloudAnalyze@1
-    displayName: "SonarCloud Analyze"
-  - task: SonarCloudPublish@1
-    displayName: "SonarCloud publish"
-    inputs:
-      pollingTimeoutSec: '300'
   - task: AzureCLI@2
     displayName: AZ ACR Build
     inputs:
