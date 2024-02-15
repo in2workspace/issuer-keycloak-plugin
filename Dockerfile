@@ -14,7 +14,7 @@ RUN mvn clean install
 FROM quay.io/keycloak/keycloak:20.0.3
 # Copiar el artefacto de la aplicación desde la etapa de compilación
 COPY --from=builder /app/target/classes/keyfile.json /opt/keycloak/providers/keyfile.json
-COPY --from=builder /app/target/in2-issuer-auth-1.0-SNAPSHOT.jar /opt/keycloak/providers/
+COPY --from=builder /app/target/in2-issuer-auth-0.5.0.jar /opt/keycloak/providers/
 COPY /imports /opt/keycloak/data/import
 
 #ENV KC_SPI_THEME_ADMIN_DEFAULT=siop-2
