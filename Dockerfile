@@ -21,8 +21,13 @@ COPY /imports /opt/keycloak/data/import
 ENV VCISSUER_ISSUER_DID="did:key:z6MkqmaCT2JqdUtLeKah7tEVfNXtDXtQyj4yxEgV11Y5CqUa"
 ENV VCISSUER_ISSUER_KEY_FILE="/opt/keycloak/providers/keyfile.json"
 
+# https://github.com/keycloak/keycloak/issues/17606#issuecomment-1472289443
+ENV KC_DB_URL_PROPERTIES="?sslmode=verify-full"
+ADD ./target/DigiCertGlobalRootCA.crt.pem /opt/keycloak/.postgresql/root.crt
+
 #ADD ./target/classes/keyfile.json /opt/keycloak/providers/keyfile.json
 #ADD ./target/in2-issuer-auth-1.0-SNAPSHOT.jar /opt/keycloak/providers/in2-issuer-auth-1.0-SNAPSHOT.jar
+
 
 #RUN bash -c 'touch /app/in2-issuer-backend-0.2.0-SNAPSHOT.jar'
 COPY applicationinsights-agent-3.4.8.jar  /build/applicationinsights-agent-3.4.8.jar
