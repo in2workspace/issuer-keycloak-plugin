@@ -33,4 +33,4 @@ COPY /certs/DigiCertGlobalRootCA.crt.pem /opt/keycloak/.postgresql/root.crt
 COPY applicationinsights-agent-3.4.8.jar  /build/applicationinsights-agent-3.4.8.jar
 COPY applicationinsights.json /build/applicationinsights.json
 EXPOSE 8088
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start", "--health-enabled=true","--metrics-enabled=true", "--log-level=INFO", "--import-realm"]
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start-dev", "--health-enabled=true","--metrics-enabled=true", "--log-level=DEBUG", "--import-realm"]
