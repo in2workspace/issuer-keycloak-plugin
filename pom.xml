@@ -5,7 +5,7 @@
 
     <groupId>es.in2.keycloak</groupId>
     <artifactId>in2-issuer-auth</artifactId>
-    <version>0.5.0</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>IN2 Authorization VC-Issuer</name>
