@@ -23,7 +23,7 @@ ENV VCISSUER_ISSUER_KEY_FILE="/opt/keycloak/providers/keyfile.json"
 
 # https://github.com/keycloak/keycloak/issues/17606#issuecomment-1472289443
 ENV KC_DB_URL_PROPERTIES="?sslmode=verify-full"
-COPY /certs/DigiCertGlobalRootCA.crt.pem /opt/keycloak/.postgresql/root.crt
+ADD  /certs/DigiCertGlobalRootCA.crt.pem /opt/keycloak/.postgresql/root.crt
 
 #ADD ./target/classes/keyfile.json /opt/keycloak/providers/keyfile.json
 #ADD ./target/in2-issuer-auth-1.0-SNAPSHOT.jar /opt/keycloak/providers/in2-issuer-auth-1.0-SNAPSHOT.jar
@@ -33,4 +33,4 @@ COPY /certs/DigiCertGlobalRootCA.crt.pem /opt/keycloak/.postgresql/root.crt
 COPY applicationinsights-agent-3.4.8.jar  /build/applicationinsights-agent-3.4.8.jar
 COPY applicationinsights.json /build/applicationinsights.json
 EXPOSE 8088
-ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start-dev", "--health-enabled=true","--metrics-enabled=true", "--log-level=DEBUG", "--import-realm"]
+ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start-dev", "--health-enabled=true","--metrics-enabled=true", "--log-level=INFO", "--import-realm"]
