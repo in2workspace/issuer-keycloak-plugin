@@ -10,8 +10,8 @@ RUN mvn clean install
 
 
 # Segunda etapa: Creación de la imagen de Keycloak
-#FROM quay.io/keycloak/keycloak:20.0.3
-FROM quay.io/keycloak/keycloak:24.0.0
+FROM quay.io/keycloak/keycloak:20.0.0
+#FROM quay.io/keycloak/keycloak:24.0.0
 
 #https://github.com/keycloak/keycloak/issues/17320#issuecomment-1642174124
 USER root
