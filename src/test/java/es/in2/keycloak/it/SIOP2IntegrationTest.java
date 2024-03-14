@@ -8,6 +8,8 @@ import es.in2.keycloak.it.model.CredentialObject;
 import es.in2.keycloak.it.model.IssuerMetaData;
 import es.in2.keycloak.it.model.Role;
 import es.in2.keycloak.it.model.VerifiableCredential;
+import jakarta.ws.rs.ClientErrorException;
+import jakarta.ws.rs.core.Response;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -37,8 +39,6 @@ import org.keycloak.representations.idm.RealmRepresentation;
 import org.keycloak.representations.idm.RoleRepresentation;
 import org.keycloak.representations.idm.UserRepresentation;
 
-import javax.ws.rs.ClientErrorException;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;

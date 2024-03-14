@@ -11,19 +11,14 @@ import es.in2.keycloak.model.walt.ProofType;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import liquibase.pro.packaged.S;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import es.in2.keycloak.model.ErrorResponse;
 import es.in2.keycloak.model.ErrorType;
-import es.in2.keycloak.model.Role;
 import es.in2.keycloak.model.SupportedCredential;
 import es.in2.keycloak.model.TokenResponse;
-import es.in2.keycloak.model.VCClaims;
-import es.in2.keycloak.model.VCConfig;
-import es.in2.keycloak.model.VCData;
-import es.in2.keycloak.model.VCRequest;
-import es.in2.keycloak.model.walt.CredentialDisplay;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -31,17 +26,14 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.fiware.keycloak.oidcvc.model.CredentialIssuerVO;
-import org.fiware.keycloak.oidcvc.model.CredentialRequestVO;
-import org.fiware.keycloak.oidcvc.model.CredentialResponseVO;
 import org.fiware.keycloak.oidcvc.model.CredentialsOfferVO;
-import org.fiware.keycloak.oidcvc.model.DisplayObjectVO;
-import org.fiware.keycloak.oidcvc.model.ErrorResponseVO;
 import org.fiware.keycloak.oidcvc.model.FormatVO;
 import org.fiware.keycloak.oidcvc.model.PreAuthorizedVO;
 import org.fiware.keycloak.oidcvc.model.ProofTypeVO;
 import org.fiware.keycloak.oidcvc.model.ProofVO;
 import org.fiware.keycloak.oidcvc.model.SupportedCredentialVO;
 import org.jboss.logging.Logger;
+import org.json.JSONObject;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.TokenVerifier;
 import org.keycloak.common.VerificationException;
@@ -66,21 +58,7 @@ import org.keycloak.services.managers.AuthenticationManager;
 import org.keycloak.services.resource.RealmResourceProvider;
 import org.keycloak.services.util.DefaultClientSessionContext;
 import org.keycloak.urls.UrlType;
-import twitter4j.JSONArray;
-import twitter4j.JSONObject;
 
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.OPTIONS;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.nio.ByteBuffer;
 import java.time.Clock;
 import java.time.Duration;
@@ -91,6 +69,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
+
 
 import static es.in2.keycloak.SIOP2ClientRegistrationProvider.VC_TYPES_PREFIX;
 
@@ -223,7 +202,7 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 	}
 
 	private Set<FormatVO> getFormatsFromString(String formatString) {
-		return Arrays.stream(formatString.split(",")).map(FormatVO::fromString).collect(Collectors.toSet());
+		return Arrays.stream(formatString.split(",")).map(FormatVO::fromValue).collect(Collectors.toSet());
 	}
 
 	private String buildIdFromType(FormatVO formatVO, String type) {
@@ -245,7 +224,10 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 	@Path("{issuer-did}/credential-offer")
 	@Produces({ MediaType.APPLICATION_JSON })
 	public Response getCredentialOffer(@PathParam("issuer-did") String issuerDidParam,
-									   @QueryParam("type") String vcType, @QueryParam("format") FormatVO format) {
+									   @QueryParam("type") String vcType, @QueryParam("format") String formatString) {
+
+		FormatVO format = Optional.ofNullable(formatString).map(FormatVO::fromValue)
+				.orElseThrow(() -> new ErrorResponseException(getErrorResponse(ErrorType.valueOf("Invalid format"))));
 
 		LOGGER.infof("Get an offer for %s - %s", vcType, format);
 		assertIssuerDid(issuerDidParam);
@@ -291,7 +273,7 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 
 		String codeId = UUID.randomUUID().toString();
 		String nonce = UUID.randomUUID().toString();
-		OAuth2Code oAuth2Code = new OAuth2Code(codeId, expiration, nonce, null, null, null, null);
+		OAuth2Code oAuth2Code = new OAuth2Code(codeId, expiration, nonce, null, null, null, null, null);
 
 		return OAuth2CodeParser.persistCode(session, clientSessionModel, oAuth2Code);
 	}
@@ -354,6 +336,7 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 
 	@NotNull
 	private List<ClientModel> getClientsOfType(String vcType, FormatVO format) {
+
 		LOGGER.debugf("Retrieve all clients of type %s, supporting format %s", vcType, format.toString());
 		if (format == FormatVO.JWT_VC) {
 			// backward compat

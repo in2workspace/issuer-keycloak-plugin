@@ -57,9 +57,9 @@
         <version.io.swagger.swagger-annotations>1.6.9</version.io.swagger.swagger-annotations>
 
         <!-- keycloak -->
-        <version.org.keycloak.libs>20.0.3</version.org.keycloak.libs>
+        <version.org.keycloak.libs>24.0.1</version.org.keycloak.libs>
         <!-- version to be used for tests - can be different from the libs -->
-        <keycloak.version>20.0.3</keycloak.version>
+        <keycloak.version>24.0.1</keycloak.version>
         <keycloak.image>quay.io/keycloak/keycloak:${keycloak.version}</keycloak.image>
         <version.org.eclipse.jkube.kubernetes-maven-plugin>1.10.1</version.org.eclipse.jkube.kubernetes-maven-plugin>
         <version.org.keycloak.keycloak-admin-client>${keycloak.version}</version.org.keycloak.keycloak-admin-client>
@@ -130,7 +130,7 @@
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-model-map</artifactId>
-            <version>${version.org.keycloak.libs}</version>
+            <version>22.0.5</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -182,6 +182,121 @@
             <version>${version.org.keycloak.keycloak-admin-client}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20240303</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.10.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>okhttp</artifactId>
+            <version>4.11.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>logging-interceptor</artifactId>
+            <version>4.11.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.gsonfire</groupId>
+            <artifactId>gson-fire</artifactId>
+            <version>1.9.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <version>1.3.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.9.10</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-client</artifactId>
+            <version>4.7.6.Final</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-multipart-provider</artifactId>
+            <version>4.7.6.Final</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.sun.xml.bind</groupId>
+                    <artifactId>jaxb-impl</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.sun.mail</groupId>
+                    <artifactId>javax.mail</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- JSON processing: jackson -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.15.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-annotations</artifactId>
+            <version>2.15.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.15.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.openapitools</groupId>
+            <artifactId>jackson-databind-nullable</artifactId>
+            <version>0.2.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.resteasy</groupId>
+            <artifactId>resteasy-jackson2-provider</artifactId>
+            <version>4.7.6.Final</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version>2.15.2</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.joschi.jackson</groupId>
+            <artifactId>jackson-datatype-threetenbp</artifactId>
+            <version>2.9.10</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <version>1.3.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13</version>
+        </dependency>
+        <!-- test dependencies -->
+
     </dependencies>
 
     <build>
@@ -200,7 +315,7 @@
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>${version.org.openapitools.generator-maven-plugin}</version>
+                <version>7.4.0</version>
                 <executions>
                     <execution>
                         <id>openapi</id>
@@ -213,7 +328,7 @@
                             <strictSpec>true</strictSpec>
                             <modelPackage>org.fiware.keycloak.oidcvc.model</modelPackage>
                             <generateAliasAsModel>true</generateAliasAsModel>
-                            <generatorName>jaxrs-spec</generatorName>
+                            <generatorName>java</generatorName>
                             <!-- the generated interfaces cannot be used, since there class level annotations clash with the spi. -->
                             <generateApis>false</generateApis>
                             <modelNameSuffix>VO</modelNameSuffix>
@@ -221,6 +336,7 @@
                                 <interfaceOnly>true</interfaceOnly>
                                 <containerDefaultToNull>true</containerDefaultToNull>
                                 <returnResponse>true</returnResponse>
+                                <library>resteasy</library>
                             </configOptions>
                         </configuration>
                     </execution>

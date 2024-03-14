@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import es.in2.keycloak.model.DIDCreate;
 import es.in2.keycloak.model.KeyId;
+import jakarta.validation.constraints.NotNull;
+import jakarta.ws.rs.core.Response;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import es.in2.keycloak.model.DIDKey;
@@ -11,8 +13,6 @@ import es.in2.keycloak.model.VCRequest;
 import org.jboss.logging.Logger;
 import org.keycloak.services.ErrorResponseException;
 
-import javax.validation.constraints.NotNull;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.ProxySelector;
