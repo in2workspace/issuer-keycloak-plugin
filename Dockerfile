@@ -11,12 +11,7 @@ RUN mvn clean install
 
 # Segunda etapa: Creación de la imagen de Keycloak
 FROM quay.io/keycloak/keycloak:20.0.3
-#FROM quay.io/keycloak/keycloak:24.0.0
 
-#https://github.com/keycloak/keycloak/issues/17320#issuecomment-1642174124
-USER root
-RUN ["sed", "-i", "s/SHA1, //g", "/usr/share/crypto-policies/DEFAULT/java.txt"]
-USER 1000
 
 # Copiar el artefacto de la aplicación desde la etapa de compilación
 COPY --from=builder /app/target/classes/keyfile.json /opt/keycloak/providers/keyfile.json
@@ -27,9 +22,6 @@ COPY /imports /opt/keycloak/data/import
 ENV VCISSUER_ISSUER_DID="did:key:z6MkqmaCT2JqdUtLeKah7tEVfNXtDXtQyj4yxEgV11Y5CqUa"
 ENV VCISSUER_ISSUER_KEY_FILE="/opt/keycloak/providers/keyfile.json"
 
-# https://github.com/keycloak/keycloak/issues/17606#issuecomment-1472289443
-ENV KC_DB_URL_PROPERTIES="?sslmode=verify-full"
-ADD  /certs/DigiCertGlobalRootCA.crt.pem /opt/keycloak/.postgresql/root.crt
 
 #ADD ./target/classes/keyfile.json /opt/keycloak/providers/keyfile.json
 #ADD ./target/in2-issuer-auth-1.0-SNAPSHOT.jar /opt/keycloak/providers/in2-issuer-auth-1.0-SNAPSHOT.jar
