@@ -33,7 +33,6 @@ import org.fiware.keycloak.oidcvc.model.ProofTypeVO;
 import org.fiware.keycloak.oidcvc.model.ProofVO;
 import org.fiware.keycloak.oidcvc.model.SupportedCredentialVO;
 import org.jboss.logging.Logger;
-import org.json.JSONObject;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.TokenVerifier;
 import org.keycloak.common.VerificationException;
@@ -273,7 +272,8 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 
 		String codeId = UUID.randomUUID().toString();
 		String nonce = UUID.randomUUID().toString();
-		OAuth2Code oAuth2Code = new OAuth2Code(codeId, expiration, nonce, null, null, null, null, null);
+		OAuth2Code oAuth2Code = new OAuth2Code(codeId, expiration, nonce, null, null,
+				null, null, userSessionModel.getId());
 
 		return OAuth2CodeParser.persistCode(session, clientSessionModel, oAuth2Code);
 	}
@@ -282,11 +282,12 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 	@POST
 	@Path("{issuer-did}/token")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response exchangeToken(@PathParam("issuer-did") String issuerDidParam,
 								  @FormParam("grant_type") String grantType, @FormParam("code") String code,
 								  @FormParam("pre-authorized_code") String preauth) {
-		assertIssuerDid(issuerDidParam);
 		LOGGER.infof("Received token request %s - %s - %s.", grantType, code, preauth);
+		assertIssuerDid(issuerDidParam);
 
 		if (!grantType.equals(GRANT_TYPE_PRE_AUTHORIZED_CODE)) {
 			throw new ErrorResponseException(getErrorResponse(ErrorType.INVALID_TOKEN));
@@ -299,9 +300,14 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 		OAuth2CodeParser.ParseResult result = OAuth2CodeParser.parseCode(session, codeToUse,
 				session.getContext().getRealm(),
 				eventBuilder);
+
 		if (result.isExpiredCode() || result.isIllegalCode()) {
 			throw new ErrorResponseException(getErrorResponse(ErrorType.INVALID_TOKEN));
 		}
+
+		session.getContext().setRealm(result.getClientSession().getRealm());
+		session.getContext().setClient(result.getClientSession().getClient());
+
 		AccessToken accessToken = new TokenManager().createClientAccessToken(session,
 				result.getClientSession().getRealm(),
 				result.getClientSession().getClient(),
@@ -400,9 +406,15 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 				LOGGER.debug(response.toString());
 				String responseBody = response.getEntity() != null ?
 						EntityUtils.toString(response.getEntity()) : "";
-				JSONObject jsonResponse = new JSONObject(responseBody);
-				String nonce = jsonResponse.optString("nonce");
-				String nonceExpiresIn = jsonResponse.optString("nonce_expires_in");
+//				JSONObject jsonResponse = new JSONObject(responseBody);
+//				String nonce = jsonResponse.optString("nonce");
+//				String nonceExpiresIn = jsonResponse.optString("nonce_expires_in");
+
+				ObjectMapper objectMapper = new ObjectMapper();
+				JsonNode jsonResponse = objectMapper.readTree(responseBody);
+				String nonce = jsonResponse.path("nonce").asText();
+				String nonceExpiresIn = jsonResponse.path("nonce_expires_in").asText();
+
 				nonceList.add(nonce);
 				nonceList.add(nonceExpiresIn);
 			}
