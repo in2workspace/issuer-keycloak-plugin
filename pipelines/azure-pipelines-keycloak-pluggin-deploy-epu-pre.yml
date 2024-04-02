@@ -11,11 +11,17 @@ variables:
     value: 'epu-pre-ca-14'
   - name: resourceGroupName
     value: 'epu-pre-rg'
+  - name: projectVersion
+    value: ''
 
 pool:
   vmImage: ubuntu-latest
 
 steps:
+  - script: |
+      version=$(grep -oP '<version>\K[^<]+' pom.xml)
+      echo "##vso[task.setvariable variable=projectVersion]$version"
+    displayName: 'Obtener y establecer la versión del proyecto'
   - task: AzureCLI@2
     displayName: AZ ACR Login
     inputs:
@@ -29,7 +35,7 @@ steps:
       azureSubscription: $(azureSubscription)
       scriptType: 'bash'
       scriptLocation: 'inlineScript'
-      inlineScript: 'az acr build -t $(imageName):$(Build.BuildId) -t $(imageName):$(Build.BuildId) -r $(registryName) -f Dockerfile .'
+      inlineScript: 'az acr build -t $(imageName):$(Build.BuildId)-$(projectVersion) -t $(imageName):$(Build.BuildId)-$(projectVersion) -r $(registryName) -f Dockerfile .'
       useGlobalConfig: true
       workingDirectory: '$(Build.SourcesDirectory)'
   - task: AzureContainerApps@1
@@ -38,4 +44,4 @@ steps:
       azureSubscription: '$(azureSubscription)'
       containerAppName: '$(containerServiceName)'
       resourceGroup: '$(resourceGroupName)'
-      imageToDeploy: '$(registryName).azurecr.io/$(imageName):$(Build.BuildId)'
+      imageToDeploy: '$(registryName).azurecr.io/$(imageName):$(Build.BuildId)-$(projectVersion)'
