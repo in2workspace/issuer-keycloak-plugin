@@ -1,7 +1,7 @@
 package es.in2.keycloak;
 
-import lombok.extern.slf4j.Slf4j;
 import es.in2.keycloak.model.SupportedCredential;
+import lombok.extern.slf4j.Slf4j;
 import org.fiware.keycloak.oidcvc.model.FormatVO;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -131,7 +131,7 @@ public class SIOP2ClientRegistrationProviderTest {
 		Optional<Field> notEqualsField = Arrays.stream(ClientRepresentation.class.getDeclaredFields())
 				.peek(field -> field.setAccessible(true))
 				.filter(field -> {
-					if (field.getName() == "id") {
+					if (field.getName().equals("id")) {
 						// ignore the id, since it's a random uuid
 						return false;
 					}
@@ -151,7 +151,7 @@ public class SIOP2ClientRegistrationProviderTest {
 			Field f = notEqualsField.get();
 			var v1 = f.get(c1);
 			var v2 = f.get(c2);
-			return String.format("Field %s does not match. V1: %s V2: %s", notEqualsField.toString(), v1, v2);
+			return String.format("Field %s does not match. V1: %s V2: %s", notEqualsField, v1, v2);
 		}
 		return null;
 	}
