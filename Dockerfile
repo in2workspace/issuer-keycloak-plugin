@@ -20,17 +20,12 @@ USER 1000
 
 # Copiar el artefacto de la aplicación desde la etapa de compilación
 COPY --from=builder /app/target/classes/keyfile.json /opt/keycloak/providers/keyfile.json
-COPY --from=builder /app/target/in2-issuer-auth-1.0.0-SNAPSHOT.jar /opt/keycloak/providers/
+COPY --from=builder /app/target/in2-issuer-auth-1.0.0.jar /opt/keycloak/providers/
 COPY /imports /opt/keycloak/data/import
 
 #ENV KC_SPI_THEME_ADMIN_DEFAULT=siop-2
 ENV VCISSUER_ISSUER_DID="did:key:z6MkqmaCT2JqdUtLeKah7tEVfNXtDXtQyj4yxEgV11Y5CqUa"
 ENV VCISSUER_ISSUER_KEY_FILE="/opt/keycloak/providers/keyfile.json"
-
-
-#ADD ./target/classes/keyfile.json /opt/keycloak/providers/keyfile.json
-#ADD ./target/in2-issuer-auth-1.0-SNAPSHOT.jar /opt/keycloak/providers/in2-issuer-auth-1.0-SNAPSHOT.jar
-
 
 #RUN bash -c 'touch /app/in2-issuer-backend-0.2.0-SNAPSHOT.jar'
 COPY applicationinsights-agent-3.4.8.jar  /build/applicationinsights-agent-3.4.8.jar

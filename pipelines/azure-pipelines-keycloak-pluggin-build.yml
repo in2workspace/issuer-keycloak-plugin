@@ -28,6 +28,15 @@ steps:
       cliProjectName: 'gencat-iep-issuer-keycloak-ms'
       cliSources: './src/main/java'
       extraProperties: 'sonar.java.binaries=$(Build.SourcesDirectory)'
+  - task: Maven@3
+    displayName: "Maven build"
+    inputs:
+      mavenPomFile: 'pom.xml'
+      mavenOptions: '-Xmx3072m'
+      javaHomeOption: 'JDKVersion'
+      jdkVersionOption: '1.17'
+      jdkArchitectureOption: 'x64'
+      goals: 'clean test package'
   - task: SonarCloudAnalyze@1
     displayName: "SonarCloud Analyze"
   - task: SonarCloudPublish@1
