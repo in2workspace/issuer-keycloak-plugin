@@ -7,7 +7,6 @@ import es.in2.keycloak.model.*;
 import jakarta.ws.rs.core.Response;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpStatus;
-import org.fiware.keycloak.oidcvc.model.CredentialVO;
 import org.fiware.keycloak.oidcvc.model.FormatVO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -15,7 +14,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.keycloak.models.*;
 import org.keycloak.services.managers.AppAuthManager;
-import org.keycloak.services.managers.AuthenticationManager;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -30,8 +28,7 @@ import java.util.stream.Stream;
 import static es.in2.keycloak.VCIssuerRealmResourceProvider.LD_PROOF_TYPE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @Slf4j
 public class VCIssuerRealmResourceProviderTest {
@@ -39,11 +36,9 @@ public class VCIssuerRealmResourceProviderTest {
 	private static final String ISSUER_DID = "did:key:test";
 
 	private final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-	private CredentialVO TEST_VC = new CredentialVO();
 
 	private KeycloakSession keycloakSession;
 	private AppAuthManager.BearerTokenAuthenticator bearerTokenAuthenticator;
-	private WaltIdClient waltIdClient;
 
 	private VCIssuerRealmResourceProvider testProvider;
 
@@ -51,54 +46,9 @@ public class VCIssuerRealmResourceProviderTest {
 	public void setUp() throws NoSuchFieldException {
 		this.keycloakSession = mock(KeycloakSession.class);
 		this.bearerTokenAuthenticator = mock(AppAuthManager.BearerTokenAuthenticator.class);
-		this.waltIdClient = mock(WaltIdClient.class);
 		this.testProvider = new VCIssuerRealmResourceProvider(keycloakSession, ISSUER_DID,
 				bearerTokenAuthenticator, Clock.systemUTC());
 	}
-
-	/*
-	@Test
-	public void testGetTypesUnauthorized() {
-		when(bearerTokenAuthenticator.authenticate()).thenReturn(null);
-
-		try {
-			testProvider.getTypes(ISSUER_DID);
-			fail("VCs should only be accessible for authorized users.");
-		} catch (ErrorResponseException e) {
-			assertEquals(Response.Status.UNAUTHORIZED.getStatusCode(), e.getResponse().getStatus(),
-					"The response should be a 403.");
-		}
-	}
-	 */
-/*
-	@ParameterizedTest
-	@MethodSource("provideTypesAndClients")
-	void testGetTypes(Stream<ClientModel> clientModelStream,
-			ExpectedResult<Set<SupportedCredential>> expectedResult) {
-		AuthenticationManager.AuthResult authResult = mock(AuthenticationManager.AuthResult.class);
-		UserModel userModel = mock(UserModel.class);
-		KeycloakContext context = mock(KeycloakContext.class);
-		RealmModel realmModel = mock(RealmModel.class);
-		ClientProvider clientProvider = mock(ClientProvider.class);
-
-		when(bearerTokenAuthenticator.authenticate()).thenReturn(authResult);
-		when(authResult.getUser()).thenReturn(userModel);
-		when(keycloakSession.getContext()).thenReturn(context);
-		when(context.getRealm()).thenReturn(realmModel);
-		when(keycloakSession.clients()).thenReturn(clientProvider);
-		when(clientProvider.getClientsStream(any())).thenReturn(clientModelStream);
-
-		//DG
-
-		List<SupportedCredential> returnedTypes = testProvider.getTypes(ISSUER_DID);
-
-		// copy to set to ignore order
-		assertEquals(expectedResult.getExpectedResult(), Set.copyOf(returnedTypes),
-				expectedResult.getMessage());
-		// compare size in addition to the set, to not get duplicates
-		assertEquals(expectedResult.getExpectedResult().size(), returnedTypes.size(), "The size should be equal.");
-
-	}*/
 
 	@ParameterizedTest
 	@MethodSource("provideClients")
