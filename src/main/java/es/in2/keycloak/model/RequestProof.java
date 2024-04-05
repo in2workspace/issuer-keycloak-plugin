@@ -13,5 +13,6 @@ public class RequestProof {
 
 	@JsonProperty("proof_type")
 	private ProofTypeVO proofType;
+	@JsonProperty("jwt")
 	private String jwt;
 }

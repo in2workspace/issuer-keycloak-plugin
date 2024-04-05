@@ -1,5 +1,6 @@
 package es.in2.keycloak.model.walt;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,8 @@ import java.util.Map;
 @NoArgsConstructor
 @Setter
 public class CredentialMetadata {
-
+    @JsonProperty("formats")
 	private Map<String, FormatObject> formats;
+    @JsonProperty("display")
 	private List<CredentialDisplay> display;
 }
