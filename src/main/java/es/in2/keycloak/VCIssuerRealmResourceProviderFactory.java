@@ -25,17 +25,9 @@ public class VCIssuerRealmResourceProviderFactory implements RealmResourceProvid
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 	private static final Logger LOGGER = Logger.getLogger(VCIssuerRealmResourceProviderFactory.class);
 	public static final String ID = "verifiable-credential";
-
-	private static final String WALTID_CORE_PORT_ENV_VAR = "VCISSUER_WALTID_CORE_PORT";
-	private static final String WALTID_SIGNATORY_PORT_ENV_VAR = "VCISSUER_WALTID_SIGNATORY_PORT";
 	private static final String ISSUER_DID_ENV_VAR = "VCISSUER_ISSUER_DID";
 	private static final String ISSUER_DID_KEY_FILE_ENV_VAR = "VCISSUER_ISSUER_KEY_FILE";
-
 	private String issuerDid;
-	private int corePort = 7000;
-	private int signatoryPort = 7001;
-
-	private WaltIdClient waltIdClient;
 
 	@Override
 	public RealmResourceProvider create(KeycloakSession keycloakSession) {
@@ -64,57 +56,6 @@ public class VCIssuerRealmResourceProviderFactory implements RealmResourceProvid
 			LOGGER.error("Was not able to initialize the issuer did. Issuing VCs is not available.",
 					waltIdConnectException);
 		}
-
-
-	}
-
-	/**
-	 * @deprecated Since version 1.0.0, scheduled for removal.
-	 */
-	@Deprecated(since = "1.0.0", forRemoval = true)
-	private void initializeCorePort() {
-		try {
-			corePort = Integer.parseInt(System.getenv(WALTID_CORE_PORT_ENV_VAR));
-		} catch (RuntimeException e) {
-			LOGGER.infof("No specific core port configured. Will use the default %d.", corePort);
-		}
-	}
-
-	/**
-	 * @deprecated Since version 1.0.0, scheduled for removal.
-	 */
-	@Deprecated(since = "1.0.0", forRemoval = true)
-	private void initializeSignatoryPort() {
-		try {
-			signatoryPort = Integer.parseInt(System.getenv(WALTID_SIGNATORY_PORT_ENV_VAR));
-		} catch (RuntimeException e) {
-			LOGGER.infof("No specific signatory port configured. Will use the default %d.", signatoryPort);
-		}
-	}
-
-	/**
-	 * @deprecated Since version 1.0.0, scheduled for removal.
-	 */
-	@Deprecated(since = "1.0.0", forRemoval = true)
-	private void initializeIssuerDid(Optional<String> keyId) {
-		try {
-			issuerDid = Optional.ofNullable(System.getenv(ISSUER_DID_ENV_VAR))
-					.orElseGet(() -> waltIdClient.createDid());
-			if (!existsDid(issuerDid)) {
-
-				LOGGER.infof("The configured did does not yet exist, we try to import %s with the key %s.", issuerDid,
-						keyId.orElse(""));
-				// issuer does not exist, try to import
-				keyId.ifPresent(key -> waltIdClient.importDid(issuerDid, key));
-			} else {
-				LOGGER.infof("Did %s already exists. Nothing else to import.", issuerDid);
-			}
-		}
-		// catch NPE(in case no such env is set and null in case an null string is set.)
-		catch (NullPointerException npe) {
-			LOGGER.info("No issuer did provided, will create one.");
-			issuerDid = waltIdClient.createDid();
-		}
 	}
 
 	private Optional<String> importIssuerKey() {
@@ -137,14 +78,6 @@ public class VCIssuerRealmResourceProviderFactory implements RealmResourceProvid
 				return Optional.empty();
 			}
 		}
-	}
-
-	/**
-	 * @deprecated Since version 1.0.0, scheduled for removal.
-	 */
-	@Deprecated(since = "1.0.0", forRemoval = true)
-	private boolean existsDid(String issuerDid) {
-		return waltIdClient.getDids().contains(issuerDid);
 	}
 
 	@Override
