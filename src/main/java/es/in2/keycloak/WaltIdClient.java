@@ -99,8 +99,10 @@ public class WaltIdClient {
 									.GET()
 									.uri(getCoreGetDidListURI())
 									.build(), HttpResponse.BodyHandlers.ofString());
-		} catch (IOException | InterruptedException e) {
+		} catch (IOException e) {
 			throw new WaltIdConnectException("Was not able to request did list from  walt-id.", e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 		}
 		if (response == null || response.statusCode() != 200) {
 			return List.of();
@@ -123,8 +125,10 @@ public class WaltIdClient {
 									.GET()
 									.uri(getCoreGetDidURI(did))
 									.build(), HttpResponse.BodyHandlers.ofString());
-		} catch (IOException | InterruptedException e) {
+		} catch (IOException e) {
 			throw new WaltIdConnectException("Was not able to request did from  walt-id.", e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 		}
 		if (response == null || response.statusCode() != 200) {
 			return Optional.empty();
@@ -144,8 +148,10 @@ public class WaltIdClient {
 											asJsonString(new DIDCreate())))
 									.uri(getCoreCreateDidURI())
 									.build(), HttpResponse.BodyHandlers.ofString());
-		} catch (IOException | InterruptedException e) {
+		} catch (IOException e) {
 			throw new WaltIdConnectException("Was not able to create did at walt-id.", e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 		}
 		if (response == null || response.statusCode() != 200) {
 			throw new WaltIdConnectException("Was not able to create did at walt-id.");
@@ -163,8 +169,10 @@ public class WaltIdClient {
 									.POST(HttpRequest.BodyPublishers.ofString(did))
 									.uri(getCoreImportDidURI(key))
 									.build(), HttpResponse.BodyHandlers.ofString());
-		} catch (IOException | InterruptedException e) {
+		} catch (IOException e) {
 			throw new WaltIdConnectException("Was not able to import did at walt-id.", e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 		}
 		if (response == null || response.statusCode() != 201) {
 			throw new WaltIdConnectException("Was not able to import did at walt-id.");
@@ -183,8 +191,10 @@ public class WaltIdClient {
 											asJsonString(didKey)))
 									.uri(getCoreImportKeyURI())
 									.build(), HttpResponse.BodyHandlers.ofString());
-		} catch (IOException | InterruptedException e) {
+		} catch (IOException e) {
 			throw new WaltIdConnectException("Was not able to import the key at walt-id.", e);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
 		}
 		if (response == null || response.statusCode() != 200) {
 			Optional.ofNullable(response).ifPresent(

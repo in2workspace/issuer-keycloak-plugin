@@ -56,7 +56,7 @@ class VCClaimsTest {
     }
 
     @Test
-    public void testGetterSetter() {
+    void testGetterSetter() {
         VCClaims vcClaims = new VCClaims("","","",null,null);
 
         vcClaims.setFirstName("John");

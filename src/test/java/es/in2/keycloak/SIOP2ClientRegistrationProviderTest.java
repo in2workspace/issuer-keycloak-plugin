@@ -22,12 +22,12 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 
 @Slf4j
-public class SIOP2ClientRegistrationProviderTest {
+class SIOP2ClientRegistrationProviderTest {
 
 	@DisplayName("Validate clientRepresentation to fit the requirements of a SIOP-2 client.")
 	@ParameterizedTest
 	@MethodSource("provideClientRepresentations")
-	public void testValidate(ClientRepresentation toTest, ExpectedResult<Boolean> expectedResult) {
+	void testValidate(ClientRepresentation toTest, ExpectedResult<Boolean> expectedResult) {
 		try {
 			SIOP2ClientRegistrationProvider.validate(toTest);
 		} catch (ErrorResponseException e) {
@@ -44,7 +44,7 @@ public class SIOP2ClientRegistrationProviderTest {
 	@DisplayName("Validate that SIOP-2 clients are properly translated to ClientRepresentations")
 	@ParameterizedTest
 	@MethodSource("provideSIOP2Clients")
-	public void testToClientRepresentation(SIOP2Client toTest, ExpectedResult<ClientRepresentation> expectedResult)
+	void testToClientRepresentation(SIOP2Client toTest, ExpectedResult<ClientRepresentation> expectedResult)
 			throws IllegalAccessException {
 		String errorMessage = compare(expectedResult.getExpectedResult(),
 				SIOP2ClientRegistrationProvider.toClientRepresentation(toTest));

@@ -52,8 +52,8 @@ public class VCIssuerRealmResourceProviderTest {
 		this.keycloakSession = mock(KeycloakSession.class);
 		this.bearerTokenAuthenticator = mock(AppAuthManager.BearerTokenAuthenticator.class);
 		this.waltIdClient = mock(WaltIdClient.class);
-		this.testProvider = new VCIssuerRealmResourceProvider(keycloakSession, ISSUER_DID, waltIdClient,
-				bearerTokenAuthenticator, new ObjectMapper(), Clock.systemUTC());
+		this.testProvider = new VCIssuerRealmResourceProvider(keycloakSession, ISSUER_DID,
+				bearerTokenAuthenticator, Clock.systemUTC());
 	}
 
 	/*
@@ -70,10 +70,10 @@ public class VCIssuerRealmResourceProviderTest {
 		}
 	}
 	 */
-
+/*
 	@ParameterizedTest
 	@MethodSource("provideTypesAndClients")
-	public void testGetTypes(Stream<ClientModel> clientModelStream,
+	void testGetTypes(Stream<ClientModel> clientModelStream,
 			ExpectedResult<Set<SupportedCredential>> expectedResult) {
 		AuthenticationManager.AuthResult authResult = mock(AuthenticationManager.AuthResult.class);
 		UserModel userModel = mock(UserModel.class);
@@ -89,7 +89,7 @@ public class VCIssuerRealmResourceProviderTest {
 		when(clientProvider.getClientsStream(any())).thenReturn(clientModelStream);
 
 		//DG
-		/*
+
 		List<SupportedCredential> returnedTypes = testProvider.getTypes(ISSUER_DID);
 
 		// copy to set to ignore order
@@ -97,90 +97,12 @@ public class VCIssuerRealmResourceProviderTest {
 				expectedResult.getMessage());
 		// compare size in addition to the set, to not get duplicates
 		assertEquals(expectedResult.getExpectedResult().size(), returnedTypes.size(), "The size should be equal.");
-		 */
-	}
 
-	/*
-	@Test
-	public void testGetVCUnauthorized() {
-		KeycloakContext context = mock(KeycloakContext.class);
-		RealmModel realmModel = mock(RealmModel.class);
-		when(keycloakSession.getContext()).thenReturn(context);
-		when(context.getRealm()).thenReturn(realmModel);
-
-		when(bearerTokenAuthenticator.authenticate()).thenReturn(null);
-
-		try {
-			testProvider.issueVerifiableCredential(ISSUER_DID, "MyVC", null);
-			fail("VCs should only be accessible for authorized users.");
-		} catch (ErrorResponseException e) {
-			assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), e.getResponse().getStatus(),
-					"The response should be a 400.");
-			ErrorResponse er = OBJECT_MAPPER.convertValue(e.getResponse().getEntity(), ErrorResponse.class);
-			assertEquals(ErrorType.INVALID_TOKEN.getValue(), er.getError(),
-					"The response should have been denied because of the invalid token.");
-		}
-	}
-	 */
-
-	/*
-	@Test
-	public void testGetVCUnauthorizedToken() {
-		KeycloakContext context = mock(KeycloakContext.class);
-		RealmModel realmModel = mock(RealmModel.class);
-		when(keycloakSession.getContext()).thenReturn(context);
-		when(context.getRealm()).thenReturn(realmModel);
-
-		when(bearerTokenAuthenticator.authenticate()).thenReturn(null);
-
-		try {
-			testProvider.issueVerifiableCredential(ISSUER_DID, "MyVC", "myToken");
-			fail("VCs should only be accessible for authorized users.");
-		} catch (ErrorResponseException e) {
-			assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), e.getResponse().getStatus(),
-					"The response should be a 400.");
-			ErrorResponse er = OBJECT_MAPPER.convertValue(e.getResponse().getEntity(), ErrorResponse.class);
-			assertEquals(ErrorType.INVALID_TOKEN.getValue(), er.getError(),
-					"The response should have been denied because of the missing token.");
-		}
-	}
-	 */
-
-	/*
-	@ParameterizedTest
-	@MethodSource("provideTypesAndClients")
-	public void testGetVCNoSuchType(Stream<ClientModel> clientModelStream,
-			ExpectedResult<Set<SupportedCredential>> ignored) {
-		AuthenticationManager.AuthResult authResult = mock(AuthenticationManager.AuthResult.class);
-		UserModel userModel = mock(UserModel.class);
-		KeycloakContext context = mock(KeycloakContext.class);
-		RealmModel realmModel = mock(RealmModel.class);
-		ClientProvider clientProvider = mock(ClientProvider.class);
-
-		when(bearerTokenAuthenticator.authenticate()).thenReturn(authResult);
-		when(authResult.getUser()).thenReturn(userModel);
-		when(keycloakSession.getContext()).thenReturn(context);
-		when(context.getRealm()).thenReturn(realmModel);
-		when(keycloakSession.clients()).thenReturn(clientProvider);
-		when(clientProvider.getClientsStream(any())).thenReturn(clientModelStream);
-
-		try {
-			testProvider.issueVerifiableCredential(ISSUER_DID, "MyNonExistentType", null);
-			fail("Not found types should be a 400");
-		} catch (ErrorResponseException e) {
-			assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), e.getResponse().getStatus(),
-					"Not found types should be a 400");
-			ErrorResponse er = OBJECT_MAPPER.convertValue(e.getResponse().getEntity(), ErrorResponse.class);
-			assertEquals(ErrorType.UNSUPPORTED_CREDENTIAL_TYPE.getValue(), er.getError(),
-					"The response should have been denied because of the unsupported type.");
-		}
-	}
-	 */
-
+	}*/
 
 	@ParameterizedTest
 	@MethodSource("provideClients")
-	public void testGetIssuerData(Stream<ClientModel> clientModelStream, ExpectedResult<IssuerMetaData> expectedResult)
+	void testGetIssuerData(Stream<ClientModel> clientModelStream, ExpectedResult<IssuerMetaData> expectedResult)
 			throws URISyntaxException {
 		KeycloakContext context = mock(KeycloakContext.class);
 		RealmModel realmModel = mock(RealmModel.class);
@@ -263,40 +185,6 @@ public class VCIssuerRealmResourceProviderTest {
 				)
 		);
 	}
-
-	/*
-	@ParameterizedTest
-	@MethodSource("provideUserAndClients")
-	public void testGetVC(UserModel userModel, Stream<ClientModel> clientModelStream,
-			Map<ClientModel, Stream<RoleModel>> roleModelStreamMap,
-			ExpectedResult<VCRequest> expectedResult) throws JsonProcessingException {
-		AuthenticationManager.AuthResult authResult = mock(AuthenticationManager.AuthResult.class);
-		KeycloakContext context = mock(KeycloakContext.class);
-		RealmModel realmModel = mock(RealmModel.class);
-		ClientProvider clientProvider = mock(ClientProvider.class);
-
-		when(bearerTokenAuthenticator.authenticate()).thenReturn(authResult);
-		when(authResult.getUser()).thenReturn(userModel);
-		when(keycloakSession.getContext()).thenReturn(context);
-		when(context.getRealm()).thenReturn(realmModel);
-		when(keycloakSession.clients()).thenReturn(clientProvider);
-		when(clientProvider.getClientsStream(any())).thenReturn(clientModelStream);
-
-		when(userModel.getClientRoleMappingsStream(any())).thenAnswer(i -> roleModelStreamMap.get(i.getArguments()[0]));
-
-		ArgumentCaptor<VCRequest> argument = ArgumentCaptor.forClass(VCRequest.class);
-
-		when(waltIdClient.getVCFromWaltId(argument.capture())).thenReturn(OBJECT_MAPPER.writeValueAsString(TEST_VC));
-		assertEquals(TEST_VC,
-				OBJECT_MAPPER.readValue(
-						(String) testProvider.issueVerifiableCredential(ISSUER_DID, "MyType", null).getEntity(),
-						CredentialVO.class),
-				"The requested VC should be returned.");
-		// randomly generated
-		expectedResult.getExpectedResult().getConfig().setSubjectDid(argument.getValue().getConfig().getSubjectDid());
-		assertEquals(expectedResult.getExpectedResult(), argument.getValue(), expectedResult.getMessage());
-	}
-	 */
 
 	private static Arguments getArguments(UserModel um, Map<ClientModel, List<RoleModel>> clients,
 			ExpectedResult expectedResult) {

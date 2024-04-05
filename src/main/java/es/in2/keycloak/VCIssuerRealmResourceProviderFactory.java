@@ -2,7 +2,6 @@ package es.in2.keycloak;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.auto.service.AutoService;
-import es.in2.keycloak.model.DIDKey;
 import es.in2.keycloak.model.KeyId;
 import org.jboss.logging.Logger;
 import org.keycloak.Config;
@@ -27,18 +26,15 @@ public class VCIssuerRealmResourceProviderFactory implements RealmResourceProvid
 	private static final Logger LOGGER = Logger.getLogger(VCIssuerRealmResourceProviderFactory.class);
 	public static final String ID = "verifiable-credential";
 
-	private static final String WALTID_ADDRESS_ENV_VAR = "VCISSUER_WALTID_ADDRESS";
 	private static final String WALTID_CORE_PORT_ENV_VAR = "VCISSUER_WALTID_CORE_PORT";
 	private static final String WALTID_SIGNATORY_PORT_ENV_VAR = "VCISSUER_WALTID_SIGNATORY_PORT";
 	private static final String ISSUER_DID_ENV_VAR = "VCISSUER_ISSUER_DID";
 	private static final String ISSUER_DID_KEY_FILE_ENV_VAR = "VCISSUER_ISSUER_KEY_FILE";
 
 	private String issuerDid;
-	private String waltIdURL;
 	private int corePort = 7000;
 	private int signatoryPort = 7001;
 
-	@Deprecated
 	private WaltIdClient waltIdClient;
 
 	@Override
@@ -48,30 +44,13 @@ public class VCIssuerRealmResourceProviderFactory implements RealmResourceProvid
 		return new VCIssuerRealmResourceProvider(
 				keycloakSession,
 				issuerDid,
-				waltIdClient,
 				new AppAuthManager.BearerTokenAuthenticator(
 						keycloakSession),
-				OBJECT_MAPPER,
 				Clock.systemUTC());
 	}
 
 	@Override
 	public void init(Config.Scope config) {
-
-		/*
-		try {
-			// read the address of walt from the realm resource.
-			waltIdURL = System.getenv(WALTID_ADDRESS_ENV_VAR);
-			initializeCorePort();
-			initializeSignatoryPort();
-
-		} catch (RuntimeException e) {
-			LOGGER.warn("Was not able to initialize the VCIssuerRealmResourceProvider. Issuing VCs is not supported.",
-					e);
-		}
-		waltIdClient = new WaltIdClient(waltIdURL, corePort, signatoryPort, OBJECT_MAPPER);
-		*/
-
 		try {
 			LOGGER.info("Starting to initialization of issuer and key.");
 			// import the issuer key, if present.
@@ -81,11 +60,6 @@ public class VCIssuerRealmResourceProviderFactory implements RealmResourceProvid
 
 			//DG
 			issuerDid = System.getenv(ISSUER_DID_ENV_VAR);
-			/*
-			initializeIssuerDid(keyId);
-			LOGGER.infof("VCIssuerRealmResourceProviderFactory configured with issuerDID %s and walt-id %s.", issuerDid,
-					waltIdURL);
-			 */
 		} catch (WaltIdConnectException waltIdConnectException) {
 			LOGGER.error("Was not able to initialize the issuer did. Issuing VCs is not available.",
 					waltIdConnectException);
@@ -94,7 +68,10 @@ public class VCIssuerRealmResourceProviderFactory implements RealmResourceProvid
 
 	}
 
-	@Deprecated
+	/**
+	 * @deprecated Since version 1.0.0, scheduled for removal.
+	 */
+	@Deprecated(since = "1.0.0", forRemoval = true)
 	private void initializeCorePort() {
 		try {
 			corePort = Integer.parseInt(System.getenv(WALTID_CORE_PORT_ENV_VAR));
@@ -103,7 +80,10 @@ public class VCIssuerRealmResourceProviderFactory implements RealmResourceProvid
 		}
 	}
 
-	@Deprecated
+	/**
+	 * @deprecated Since version 1.0.0, scheduled for removal.
+	 */
+	@Deprecated(since = "1.0.0", forRemoval = true)
 	private void initializeSignatoryPort() {
 		try {
 			signatoryPort = Integer.parseInt(System.getenv(WALTID_SIGNATORY_PORT_ENV_VAR));
@@ -112,7 +92,10 @@ public class VCIssuerRealmResourceProviderFactory implements RealmResourceProvid
 		}
 	}
 
-	@Deprecated
+	/**
+	 * @deprecated Since version 1.0.0, scheduled for removal.
+	 */
+	@Deprecated(since = "1.0.0", forRemoval = true)
 	private void initializeIssuerDid(Optional<String> keyId) {
 		try {
 			issuerDid = Optional.ofNullable(System.getenv(ISSUER_DID_ENV_VAR))
@@ -154,23 +137,12 @@ public class VCIssuerRealmResourceProviderFactory implements RealmResourceProvid
 				return Optional.empty();
 			}
 		}
-
-		/*
-		try {
-			DIDKey keyToImport = OBJECT_MAPPER.readValue(keyFile, DIDKey.class);
-			return Optional.ofNullable(waltIdClient.importDIDKey(keyToImport));
-		} catch (IOException e) {
-			LOGGER.warnf("The keyfile %s is not a valid key. Skip import.", keyFileEnv.get(), e);
-			return Optional.empty();
-		} catch (WaltIdConnectException e) {
-			LOGGER.warnf("Was not able to import the key. Skip import.", e);
-			return Optional.empty();
-		}
-		 */
-
 	}
 
-	@Deprecated
+	/**
+	 * @deprecated Since version 1.0.0, scheduled for removal.
+	 */
+	@Deprecated(since = "1.0.0", forRemoval = true)
 	private boolean existsDid(String issuerDid) {
 		return waltIdClient.getDids().contains(issuerDid);
 	}

@@ -1,7 +1,6 @@
 package es.in2.keycloak;
 
 import com.google.auto.service.AutoService;
-import org.jboss.logging.Logger;
 import org.keycloak.Config;
 import org.keycloak.events.EventBuilder;
 import org.keycloak.models.ClientModel;
@@ -23,8 +22,6 @@ import java.util.Map;
  */
 @AutoService(LoginProtocolFactory.class)
 public class SIOP2LoginProtocolFactory implements LoginProtocolFactory {
-
-	private static final Logger LOGGER = Logger.getLogger(SIOP2LoginProtocolFactory.class);
 	public static final String PROTOCOL_ID = "SIOP-2";
 
 	@Override public Map<String, ProtocolMapperModel> getBuiltinMappers() {

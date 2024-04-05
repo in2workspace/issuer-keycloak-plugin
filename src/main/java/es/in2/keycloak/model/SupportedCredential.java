@@ -10,6 +10,6 @@ import org.fiware.keycloak.oidcvc.model.FormatVO;
 @NoArgsConstructor
 public class SupportedCredential {
 
-	public String type;
-	public FormatVO format;
+	private String type;
+	private FormatVO format;
 }

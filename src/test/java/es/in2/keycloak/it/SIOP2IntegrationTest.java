@@ -123,14 +123,14 @@ public class SIOP2IntegrationTest {
 
 	@DisplayName("The provided key and did should have been successfully imported")
 	@Test
-	public void testImportSuccess() {
+	void testImportSuccess() {
 		assertEquals(KEYCLOAK_ISSUER_DID, issuerDid, "The preconfigured did should have been imported.");
 	}
 
 	@DisplayName("Retrieve issuer metadata.")
 	@ParameterizedTest
 	@MethodSource("provideClients")
-	public void testMetadataRetrieval(List<Client> clients, ExpectedResult<IssuerMetaData> expectedResult)
+	void testMetadataRetrieval(List<Client> clients, ExpectedResult<IssuerMetaData> expectedResult)
 			throws IOException, InterruptedException {
 		clients.forEach(c -> assertClientCreation(c.getId(), c.getSupportedTypes()));
 
@@ -224,7 +224,7 @@ public class SIOP2IntegrationTest {
 	@DisplayName("Issue credentials using a bearer token.")
 	@ParameterizedTest
 	@MethodSource("provideUsersAndClients")
-	public void testVCIssuanceWithBearer(List<Client> clients, List<User> users, String userToRequest,
+	void testVCIssuanceWithBearer(List<Client> clients, List<User> users, String userToRequest,
 			String credentialToRequest,
 			ExpectedResult<Set<Role>> expectedResult) throws Exception {
 		testVCIssuance(true, () -> getUserTokenForAccounts(userToRequest), clients, users, userToRequest,
@@ -235,7 +235,7 @@ public class SIOP2IntegrationTest {
 	@DisplayName("Issue credentials using a token-parameter.")
 	@ParameterizedTest
 	@MethodSource("provideUsersAndClients")
-	public void testVCIssuanceWithTokenParam(List<Client> clients, List<User> users, String userToRequest,
+	void testVCIssuanceWithTokenParam(List<Client> clients, List<User> users, String userToRequest,
 			String credentialToRequest,
 			ExpectedResult<Set<Role>> expectedResult) throws Exception {
 
@@ -246,7 +246,7 @@ public class SIOP2IntegrationTest {
 	@DisplayName("Credentials issuance with an invalid token in the header should be denied")
 	@ParameterizedTest
 	@MethodSource("provideUsersAndClients")
-	public void testVCIssuanceWithInvalidAuthHeader(List<Client> clients, List<User> users, String userToRequest,
+	void testVCIssuanceWithInvalidAuthHeader(List<Client> clients, List<User> users, String userToRequest,
 			String credentialToRequest) throws Exception {
 
 		ExpectedResult expectedResult = new ExpectedResult(null,
@@ -260,7 +260,7 @@ public class SIOP2IntegrationTest {
 	@DisplayName("Credentials issuance with an invalid token in the token parameter should be denied")
 	@ParameterizedTest
 	@MethodSource("provideUsersAndClients")
-	public void testVCIssuanceWithInvalidToken(List<Client> clients, List<User> users, String userToRequest,
+	void testVCIssuanceWithInvalidToken(List<Client> clients, List<User> users, String userToRequest,
 			String credentialToRequest) throws Exception {
 
 		ExpectedResult expectedResult = new ExpectedResult(null,
@@ -272,7 +272,7 @@ public class SIOP2IntegrationTest {
 	}
 
 	@Test
-	public void testIssuanceFlow() throws IOException, InterruptedException {
+	void testIssuanceFlow() throws IOException, InterruptedException {
 		String credentialType = "BatteryPassAuthCredential";
 
 		Client clientOne = Client.builder()
@@ -411,6 +411,10 @@ public class SIOP2IntegrationTest {
 				"The requested format should have been returned");
 		assertNotNull(credentialResponseVO.getCredential(), "The credential should be returned.");
 
+		testConvertValue(credentialResponseVO, credentialType);
+	}
+
+	private void testConvertValue(CredentialResponseVO credentialResponseVO, String credentialType) {
 		Map<String, Object> credentialMap = OBJECT_MAPPER.convertValue(credentialResponseVO.getCredential(),
 				new TypeReference<Map<String, Object>>() {
 				});

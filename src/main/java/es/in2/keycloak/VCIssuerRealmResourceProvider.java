@@ -1,13 +1,7 @@
 package es.in2.keycloak;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 
-import es.in2.keycloak.model.walt.CredentialMetadata;
-import es.in2.keycloak.model.walt.FormatObject;
-import es.in2.keycloak.model.walt.IssuerDisplay;
-import es.in2.keycloak.model.walt.ProofType;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -29,23 +23,17 @@ import org.fiware.keycloak.oidcvc.model.CredentialIssuerVO;
 import org.fiware.keycloak.oidcvc.model.CredentialsOfferVO;
 import org.fiware.keycloak.oidcvc.model.FormatVO;
 import org.fiware.keycloak.oidcvc.model.PreAuthorizedVO;
-import org.fiware.keycloak.oidcvc.model.ProofTypeVO;
-import org.fiware.keycloak.oidcvc.model.ProofVO;
 import org.fiware.keycloak.oidcvc.model.SupportedCredentialVO;
 import org.jboss.logging.Logger;
 import org.keycloak.OAuth2Constants;
-import org.keycloak.TokenVerifier;
-import org.keycloak.common.VerificationException;
 import org.keycloak.common.util.Time;
 import org.keycloak.events.EventBuilder;
 import org.keycloak.models.AuthenticatedClientSessionModel;
 import org.keycloak.models.ClientModel;
 import org.keycloak.models.KeycloakContext;
 import org.keycloak.models.KeycloakSession;
-import org.keycloak.models.RoleModel;
 import org.keycloak.models.UserModel;
 import org.keycloak.models.UserSessionModel;
-import org.keycloak.protocol.oidc.OIDCWellKnownProvider;
 import org.keycloak.protocol.oidc.TokenManager;
 import org.keycloak.protocol.oidc.utils.OAuth2Code;
 import org.keycloak.protocol.oidc.utils.OAuth2CodeParser;
@@ -58,13 +46,9 @@ import org.keycloak.services.resource.RealmResourceProvider;
 import org.keycloak.services.util.DefaultClientSessionContext;
 import org.keycloak.urls.UrlType;
 
-import java.nio.ByteBuffer;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -79,29 +63,24 @@ import static es.in2.keycloak.SIOP2ClientRegistrationProvider.VC_TYPES_PREFIX;
 public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 
 	private static final Logger LOGGER = Logger.getLogger(VCIssuerRealmResourceProvider.class);
-	private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ISO_DATE_TIME
-			.withZone(ZoneId.of(ZoneOffset.UTC.getId()));
 
 	public static final String LD_PROOF_TYPE = "LD_PROOF";
 	public static final String CREDENTIAL_PATH = "credential";
 	public static final String TYPE_VERIFIABLE_CREDENTIAL = "VerifiableCredential";
 	public static final String GRANT_TYPE_PRE_AUTHORIZED_CODE = "urn:ietf:params:oauth:grant-type:pre-authorized_code";
 
+	public static final String ACCESS_CONTROL = "Access-Control-Allow-Origin";
+
 	private final KeycloakSession session;
 	private final String issuerDid;
 	private final AppAuthManager.BearerTokenAuthenticator bearerTokenAuthenticator;
-	private final WaltIdClient waltIdClient;
-	private final ObjectMapper objectMapper;
 	private final Clock clock;
 
-	public VCIssuerRealmResourceProvider(KeycloakSession session, String issuerDid, WaltIdClient waltIdClient,
-										 AppAuthManager.BearerTokenAuthenticator authenticator,
-										 ObjectMapper objectMapper, Clock clock) {
+	public VCIssuerRealmResourceProvider(KeycloakSession session, String issuerDid,
+										 AppAuthManager.BearerTokenAuthenticator authenticator, Clock clock) {
 		this.session = session;
 		this.issuerDid = issuerDid;
-		this.waltIdClient = waltIdClient;
 		this.bearerTokenAuthenticator = authenticator;
-		this.objectMapper = objectMapper;
 		this.clock = clock;
 	}
 
@@ -149,7 +128,6 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 		return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorResponse(errorType.getValue())).build();
 	}
 
-	//TODO set to IN2 fields
 	@GET
 	@Path("{issuer-did}/.well-known/openid-credential-issuer")
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -167,7 +145,7 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 						.authorizationServer(String.format(authorizationEndpointPattern, getIssuer()))
 						.credentialEndpoint(getCredentialEndpoint())
 						.credentialsSupported(getSupportedCredentials(currentContext)))
-				.header("Access-Control-Allow-Origin", "*").build();
+				.header(ACCESS_CONTROL, "*").build();
 	}
 
 	private String getCredentialEndpoint() {
@@ -218,7 +196,6 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 		return String.format("%s/realms/%s", backendUrl, realm);
 	}
 
-	//TODO return only preauth code
 	@GET
 	@Path("{issuer-did}/credential-offer")
 	@Produces({ MediaType.APPLICATION_JSON })
@@ -255,7 +232,7 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 		LOGGER.infof("Responding with offer: %s", theOffer);
 		return Response.ok()
 				.entity(theOffer)
-				.header("Access-Control-Allow-Origin", "*")
+				.header(ACCESS_CONTROL, "*")
 				.build();
 
 	}
@@ -278,7 +255,6 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 		return OAuth2CodeParser.persistCode(session, clientSessionModel, oAuth2Code);
 	}
 
-	//TODO check IN2 changes
 	@POST
 	@Path("{issuer-did}/token")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -325,7 +301,7 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 		long nonceExpiresIn = Long.parseLong(response.get(1));
 
 		return Response.ok().entity(new TokenResponse(encryptedToken, tokenType, expiresIn, nonce, nonceExpiresIn))
-				.header("Access-Control-Allow-Origin", "*")
+				.header(ACCESS_CONTROL, "*")
 				.build();
 	}
 
@@ -334,7 +310,7 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 	@OPTIONS
 	@Path("{any: .*}")
 	public Response optionCorsResponse() {
-		return Response.ok().header("Access-Control-Allow-Origin", "*")
+		return Response.ok().header(ACCESS_CONTROL, "*")
 				.header("Access-Control-Allow-Methods", "POST,GET,OPTIONS")
 				.header("Access-Control-Allow-Headers", "Content-Type,Authorization")
 				.build();
@@ -406,9 +382,6 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 				LOGGER.debug(response.toString());
 				String responseBody = response.getEntity() != null ?
 						EntityUtils.toString(response.getEntity()) : "";
-//				JSONObject jsonResponse = new JSONObject(responseBody);
-//				String nonce = jsonResponse.optString("nonce");
-//				String nonceExpiresIn = jsonResponse.optString("nonce_expires_in");
 
 				ObjectMapper objectMapper = new ObjectMapper();
 				JsonNode jsonResponse = objectMapper.readTree(responseBody);
