@@ -431,6 +431,8 @@
                     <!-- exclude generated code -->
                     <excludes>
                         <exclude>org/fiware/keycloak/oidcvc/**/*</exclude>
+                        <exclude>org/gradle/cli</exclude>
+                        <exclude>org/gradle/wrapper</exclude>
                     </excludes>
                 </configuration>
                 <executions>
