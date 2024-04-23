@@ -75,13 +75,15 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 	private final String issuerDid;
 	private final AppAuthManager.BearerTokenAuthenticator bearerTokenAuthenticator;
 	private final Clock clock;
+	private final CacheStore<String> cacheStore;
 
 	public VCIssuerRealmResourceProvider(KeycloakSession session, String issuerDid,
-										 AppAuthManager.BearerTokenAuthenticator authenticator, Clock clock) {
+										 AppAuthManager.BearerTokenAuthenticator authenticator, Clock clock, CacheStore<String> cacheStore) {
 		this.session = session;
 		this.issuerDid = issuerDid;
 		this.bearerTokenAuthenticator = authenticator;
 		this.clock = clock;
+		this.cacheStore = cacheStore;
 	}
 
 	@Override

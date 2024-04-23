@@ -28,6 +28,7 @@ public class VCIssuerRealmResourceProviderFactory implements RealmResourceProvid
 	private static final String ISSUER_DID_ENV_VAR = "VCISSUER_ISSUER_DID";
 	private static final String ISSUER_DID_KEY_FILE_ENV_VAR = "VCISSUER_ISSUER_KEY_FILE";
 	private String issuerDid;
+	private CacheStore<String> cacheStrore;
 
 	@Override
 	public RealmResourceProvider create(KeycloakSession keycloakSession) {
@@ -38,7 +39,8 @@ public class VCIssuerRealmResourceProviderFactory implements RealmResourceProvid
 				issuerDid,
 				new AppAuthManager.BearerTokenAuthenticator(
 						keycloakSession),
-				Clock.systemUTC());
+				Clock.systemUTC(),
+				cacheStrore);
 	}
 
 	@Override
