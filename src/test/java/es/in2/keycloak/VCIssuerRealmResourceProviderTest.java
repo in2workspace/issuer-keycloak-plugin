@@ -42,15 +42,12 @@ public class VCIssuerRealmResourceProviderTest {
 
 	private VCIssuerRealmResourceProvider testProvider;
 
-	private CacheStore<String> cacheStore;
-
 	@BeforeEach
 	public void setUp() {
 		this.keycloakSession = mock(KeycloakSession.class);
 		this.bearerTokenAuthenticator = mock(AppAuthManager.BearerTokenAuthenticator.class);
 		this.testProvider = new VCIssuerRealmResourceProvider(keycloakSession, ISSUER_DID,
-				bearerTokenAuthenticator, Clock.systemUTC(),
-				cacheStore);
+				bearerTokenAuthenticator, Clock.systemUTC());
 	}
 
 	@ParameterizedTest

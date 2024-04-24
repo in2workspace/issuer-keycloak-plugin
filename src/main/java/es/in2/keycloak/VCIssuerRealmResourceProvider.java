@@ -2,9 +2,15 @@ package es.in2.keycloak;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.JsonNode;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.enterprise.inject.spi.CDI;
+import jakarta.enterprise.util.TypeLiteral;
+import jakarta.inject.Inject;
 import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -51,6 +57,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -68,22 +75,23 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 	public static final String CREDENTIAL_PATH = "credential";
 	public static final String TYPE_VERIFIABLE_CREDENTIAL = "VerifiableCredential";
 	public static final String GRANT_TYPE_PRE_AUTHORIZED_CODE = "urn:ietf:params:oauth:grant-type:pre-authorized_code";
-
 	public static final String ACCESS_CONTROL = "Access-Control-Allow-Origin";
-
+	private static final Cache<String, String> cache = CacheBuilder.newBuilder()
+			.expireAfterWrite(10, TimeUnit.MINUTES)
+			.concurrencyLevel(Runtime.getRuntime().availableProcessors())
+			.build();
 	private final KeycloakSession session;
 	private final String issuerDid;
 	private final AppAuthManager.BearerTokenAuthenticator bearerTokenAuthenticator;
 	private final Clock clock;
-	private final CacheStore<String> cacheStore;
+
 
 	public VCIssuerRealmResourceProvider(KeycloakSession session, String issuerDid,
-										 AppAuthManager.BearerTokenAuthenticator authenticator, Clock clock, CacheStore<String> cacheStore) {
+										 AppAuthManager.BearerTokenAuthenticator authenticator, Clock clock) {
 		this.session = session;
 		this.issuerDid = issuerDid;
 		this.bearerTokenAuthenticator = authenticator;
 		this.clock = clock;
-		this.cacheStore = cacheStore;
 	}
 
 	@Override
@@ -227,10 +235,14 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 				.exp(now.plus(Duration.of(300, ChronoUnit.SECONDS)).getEpochSecond());
 		token.setOtherClaims("offeredCredential", new SupportedCredential(vcType, format));
 
+		// Generate pre-authorized code and PIN and save them in cache
+		String preAuthorizedCode = generateAuthorizationCode();
+		cache.put(preAuthorizedCode, "1234");
+
 		CredentialsOfferVO theOffer = new CredentialsOfferVO()
 				.credentialIssuer(getIssuer())
 				.credentials(List.of(offeredCredential))
-				.grants(new PreAuthorizedVO().preAuthorizedCode(generateAuthorizationCode()).userPinRequired(false));
+				.grants(new PreAuthorizedVO().preAuthorizedCode(preAuthorizedCode).userPinRequired(true));
 		LOGGER.infof("Responding with offer: %s", theOffer);
 		return Response.ok()
 				.entity(theOffer)
@@ -263,13 +275,19 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response exchangeToken(@PathParam("issuer-did") String issuerDidParam,
 								  @FormParam("grant_type") String grantType, @FormParam("code") String code,
-								  @FormParam("pre-authorized_code") String preauth) {
-		LOGGER.infof("Received token request %s - %s - %s.", grantType, code, preauth);
+								  @FormParam("pre-authorized_code") String preauth,
+								  @FormParam("tx_code") String txCode) {
+		LOGGER.infof("Received token request %s - %s - %s - %s.", grantType, code, preauth, txCode);
 		assertIssuerDid(issuerDidParam);
 
 		if (!grantType.equals(GRANT_TYPE_PRE_AUTHORIZED_CODE)) {
 			throw new ErrorResponseException(getErrorResponse(ErrorType.INVALID_TOKEN));
 		}
+		// if the provided tx_code don't match with the one bounded with the pre-authcode in cache throw error
+		if(!Objects.equals(cache.getIfPresent(preauth), txCode)){
+			throw new ErrorResponseException(getErrorResponse(ErrorType.INVALID_TX_CODE));
+		}
+
 		// some (not fully OIDC4VCI compatible) wallets send the preauthorized code as an alternative parameter
 		String codeToUse = Optional.ofNullable(code).orElse(preauth);
 
