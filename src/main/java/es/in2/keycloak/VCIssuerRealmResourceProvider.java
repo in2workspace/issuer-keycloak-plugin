@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import es.in2.keycloak.model.*;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -15,10 +16,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import es.in2.keycloak.model.ErrorResponse;
-import es.in2.keycloak.model.ErrorType;
-import es.in2.keycloak.model.SupportedCredential;
-import es.in2.keycloak.model.TokenResponse;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -158,6 +155,21 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 				.header(ACCESS_CONTROL, "*").build();
 	}
 
+	@GET
+	@Path("{issuer-did}/.well-known/openid-configuration")
+	@Produces({ MediaType.APPLICATION_JSON })
+	@ApiOperation(value = "Return the authorization server metadata", tags = {})
+	@ApiResponses(value = {
+			@ApiResponse(code = 200, message = "The authorization server metadata", response = AuthorizationServerMetadata.class) })
+	public Response getAuthServerMetadata(@PathParam("issuer-did") String issuerDidParam) {
+		LOGGER.info("Retrieve authorization server metadata");
+		assertIssuerDid(issuerDidParam);
+		String tokenEndpointPattern = "%s/token";
+
+		return Response.ok().entity(new AuthorizationServerMetadata(String.format(tokenEndpointPattern, getIssuer())))
+				.header(ACCESS_CONTROL, "*").build();
+	}
+
 	private String getCredentialEndpoint() {
 
 		return getIssuer() + "/" + CREDENTIAL_PATH;
@@ -198,7 +210,7 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 
 	private String getRealmResourcePath() {
 		KeycloakContext currentContext = session.getContext();
-		String realm = currentContext.getRealm().getId();
+		String realm = currentContext.getRealm().getName();
 		String backendUrl = currentContext.getUri(UrlType.BACKEND).getBaseUri().toString();
 		if (backendUrl.endsWith("/")) {
 			return String.format("%srealms/%s", backendUrl, realm);

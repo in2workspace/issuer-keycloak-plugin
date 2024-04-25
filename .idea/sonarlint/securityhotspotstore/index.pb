@@ -45,3 +45,7 @@ r
 Bsrc/main/java/es/in2/keycloak/SIOP2ClientRegistrationProvider.java,9\1\9154ad438c03d6de83c527acdddb2551138c44d9
 C
 in2-issuer-auth.iml,d\3\d32df585f6836ddeb797b41e28d52ae748ce2543
+_
+/src/main/java/es/in2/keycloak/model/VCData.java,e\4\e47301f61129d4c049c4fa21f66d60fb599ec5a1
+t
+Dsrc/main/java/es/in2/keycloak/model/AuthorizationServerMetadata.java,7\4\74bf496c772fe21b8d38240ca7e96af5037de790
