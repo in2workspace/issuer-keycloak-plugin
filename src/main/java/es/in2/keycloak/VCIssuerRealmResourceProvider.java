@@ -270,15 +270,17 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 
 		// Generate pre-authorized code and PIN and save them in cache
 		String preAuthorizedCode = generateAuthorizationCode();
+		//todo: generate random tx_code according to TX_CODE_SIZE env variable
 		cache.put(preAuthorizedCode, "1234");
 
-		CredentialsOfferVO theOffer = new CredentialsOfferVO()
-				.credentialIssuer(getIssuer())
-				.credentials(List.of(offeredCredential))
-				.grants(new PreAuthorizedVO().preAuthorizedCode(preAuthorizedCode).userPinRequired(true));
-		LOGGER.infof("Responding with offer: %s", theOffer);
+		Grant grant = new Grant(
+				preAuthorizedCode,
+				Grant.TxCode.builder().description(getTxCodeDescription()).length(getTxCodeSize()).build()
+				);
+
+		LOGGER.infof("Responding with offer: %s", grant);
 		return Response.ok()
-				.entity(theOffer)
+				.entity(grant)
 				.header(ACCESS_CONTROL, "*")
 				.build();
 
@@ -434,8 +436,14 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 	/**
 	 *	Obtains the environment variable TX_CODE_SIZE from the docker-compose environment
 	 */
-	private static String getTxCodeSize() {
-		return System.getenv("TX_CODE_SIZE");
+	private static int getTxCodeSize() {
+		return Integer.parseInt(System.getenv("TX_CODE_SIZE"));
+	}
+	/**
+	 *	Obtains the environment variable TX_CODE_DESCRIPTION from the docker-compose environment
+	 */
+	private static String getTxCodeDescription() {
+		return System.getenv("TX_CODE_DESCRIPTION");
 	}
 
 	public static List<String> sendAccessTokenToIssuerToGetNonce(String accessToken){
