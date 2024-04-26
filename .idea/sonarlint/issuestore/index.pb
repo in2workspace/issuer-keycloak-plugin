@@ -14,12 +14,6 @@ p
 :
 
 module.xml,7\2\720e447d56445e41fbe67d4838430275b38a2c5b
-]
--src/main/java/es/in2/keycloak/CacheStore.java,5\1\51aa04e9104b07bab8df247d47386dda675ceae9
-^
-.src/main/java/es/in2/keycloak/CacheConfig.java,c\8\c89838de961397ab08c2c1106fbdd02d9155324f
-_
-/src/main/java/es/in2/keycloak/CacheService.java,c\4\c429a5ad9de9111f054e1c16288d3b0cfb132104
 w
 Gsrc/main/java/es/in2/keycloak/VCIssuerRealmResourceProviderFactory.java,7\e\7e5c597c8efec63113f9a1677bd21aa3ca9888a9
 t
@@ -49,3 +43,10 @@ _
 /src/main/java/es/in2/keycloak/model/VCData.java,e\4\e47301f61129d4c049c4fa21f66d60fb599ec5a1
 t
 Dsrc/main/java/es/in2/keycloak/model/AuthorizationServerMetadata.java,7\4\74bf496c772fe21b8d38240ca7e96af5037de790
+<
+api/api.yaml,4\5\45a64ae36adb0456e21d45b5d46eca899fa2ea46
+N
+imports/EAAProvider-realm.json,8\3\8379ef3430231f76d1887490f2c6b5b561003be9
+:
+
+.gitignore,a\5\a5cc2925ca8258af241be7e5b0381edf30266302

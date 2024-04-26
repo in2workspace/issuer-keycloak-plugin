@@ -22,6 +22,7 @@ import java.time.Clock;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,7 +48,7 @@ public class VCIssuerRealmResourceProviderTest {
 		this.keycloakSession = mock(KeycloakSession.class);
 		this.bearerTokenAuthenticator = mock(AppAuthManager.BearerTokenAuthenticator.class);
 		this.testProvider = new VCIssuerRealmResourceProvider(keycloakSession, ISSUER_DID,
-				bearerTokenAuthenticator, Clock.systemUTC());
+				bearerTokenAuthenticator, Clock.systemUTC(), 10L, TimeUnit.MINUTES);
 	}
 
 	@ParameterizedTest

@@ -73,22 +73,43 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 	public static final String TYPE_VERIFIABLE_CREDENTIAL = "VerifiableCredential";
 	public static final String GRANT_TYPE_PRE_AUTHORIZED_CODE = "urn:ietf:params:oauth:grant-type:pre-authorized_code";
 	public static final String ACCESS_CONTROL = "Access-Control-Allow-Origin";
-	private static final Cache<String, String> cache = CacheBuilder.newBuilder()
-			.expireAfterWrite(10, TimeUnit.MINUTES)
-			.concurrencyLevel(Runtime.getRuntime().availableProcessors())
-			.build();
+	private static Cache<String, String> cache;
 	private final KeycloakSession session;
 	private final String issuerDid;
 	private final AppAuthManager.BearerTokenAuthenticator bearerTokenAuthenticator;
 	private final Clock clock;
+	// Optional parameters for cache settings
+	private static Long customDuration = null;
+	private static TimeUnit customTimeUnit = null;
 
 
 	public VCIssuerRealmResourceProvider(KeycloakSession session, String issuerDid,
 										 AppAuthManager.BearerTokenAuthenticator authenticator, Clock clock) {
+		this(session, issuerDid, authenticator, clock, null, null);
+	}
+	public VCIssuerRealmResourceProvider(KeycloakSession session, String issuerDid,
+										 AppAuthManager.BearerTokenAuthenticator authenticator, Clock clock,
+										 Long duration, TimeUnit timeUnit) {
 		this.session = session;
 		this.issuerDid = issuerDid;
 		this.bearerTokenAuthenticator = authenticator;
 		this.clock = clock;
+		if (duration != null && timeUnit != null) {
+			customDuration = duration;
+			customTimeUnit = timeUnit;
+		}
+		initializeCache();
+	}
+
+	private static synchronized void initializeCache() {
+		if (cache == null) {
+			long duration = customDuration != null ? customDuration : getTxCodeLifespan();
+			TimeUnit timeUnit = customTimeUnit != null ? customTimeUnit : getTxCodeLifespanTimeUnit();
+			cache = CacheBuilder.newBuilder()
+					.expireAfterWrite(duration, timeUnit)
+					.concurrencyLevel(Runtime.getRuntime().availableProcessors())
+					.build();
+		}
 	}
 
 	@Override
@@ -297,7 +318,10 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 		}
 		// if the provided tx_code don't match with the one bounded with the pre-authcode in cache throw error
 		if(!Objects.equals(cache.getIfPresent(preauth), txCode)){
+			cache.invalidate(preauth);
 			throw new ErrorResponseException(getErrorResponse(ErrorType.INVALID_TX_CODE));
+		} else {
+			cache.invalidate(preauth);
 		}
 
 		// some (not fully OIDC4VCI compatible) wallets send the preauthorized code as an alternative parameter
@@ -394,6 +418,24 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 	*/
 	private static String getIssuerUrl() {
 		return System.getenv("ISSUER_API_URL");
+	}
+	/**
+	 *	Obtains the environment variable TX_CODE_LIFESPAN from the docker-compose environment
+	 */
+	private static long getTxCodeLifespan() {
+		return Long.parseLong(System.getenv("TX_CODE_LIFESPAN"));
+	}
+	/**
+	 *	Obtains the environment variable TX_CODE_LIFESPAN_TIME_UNIT from the docker-compose environment
+	 */
+	private static TimeUnit getTxCodeLifespanTimeUnit() {
+		return TimeUnit.valueOf(System.getenv("TX_CODE_LIFESPAN_TIME_UNIT").toUpperCase());
+	}
+	/**
+	 *	Obtains the environment variable TX_CODE_SIZE from the docker-compose environment
+	 */
+	private static String getTxCodeSize() {
+		return System.getenv("TX_CODE_SIZE");
 	}
 
 	public static List<String> sendAccessTokenToIssuerToGetNonce(String accessToken){
