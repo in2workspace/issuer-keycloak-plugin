@@ -350,6 +350,9 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 				DefaultClientSessionContext.fromClientSessionAndScopeParameter(result.getClientSession(),
 						OAuth2Constants.SCOPE_OPENID, session));
 
+		// setting custom expiration time from env variables
+		accessToken.expiration(getTokenExpiration()+Time.currentTime());
+
 		String encryptedToken = session.tokens().encodeAndEncrypt(accessToken);
 		LOGGER.infof("Successfully returned the token: %s.", encryptedToken);
 		String tokenType = "bearer";
@@ -444,6 +447,12 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 	 */
 	private static String getTxCodeDescription() {
 		return System.getenv("TX_CODE_DESCRIPTION");
+	}
+	/**
+	 *	Obtains the environment variable TOKEN_EXPIRATION from the docker-compose environment
+	 */
+	private static int getTokenExpiration() {
+		return Integer.parseInt(System.getenv("TOKEN_EXPIRATION"));
 	}
 
 	public static List<String> sendAccessTokenToIssuerToGetNonce(String accessToken){
