@@ -258,7 +258,6 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 			getClientsOfType(vcType, format);
 		}
 
-		SupportedCredential offeredCredential = new SupportedCredential(vcType, format);
 		Instant now = clock.instant();
 		JsonWebToken token = new JsonWebToken()
 				.id(UUID.randomUUID().toString())
@@ -269,8 +268,8 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 		token.setOtherClaims("offeredCredential", new SupportedCredential(vcType, format));
 
 		// Generate pre-authorized code and PIN and save them in cache
-		String preAuthorizedCode = generateAuthorizationCode();
 		//todo: generate random tx_code according to TX_CODE_SIZE env variable
+		String preAuthorizedCode = generateAuthorizationCode();
 		cache.put(preAuthorizedCode, "1234");
 
 		Grant grant = new Grant(
@@ -449,7 +448,7 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 		return System.getenv("TX_CODE_DESCRIPTION");
 	}
 	/**
-	 *	Obtains the environment variable TOKEN_EXPIRATION from the docker-compose environment
+	 *	Obtains the environment variable TOKEN_EXPIRATION (in seconds) from the docker-compose environment
 	 */
 	private static int getTokenExpiration() {
 		return Integer.parseInt(System.getenv("TOKEN_EXPIRATION"));

@@ -4,13 +4,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>es.in2.keycloak</groupId>
-    <artifactId>in2-issuer-auth</artifactId>
-    <version>1.0.0</version>
+    <artifactId>in2-pre-authorized-code-keycloak-plugin</artifactId>
+    <version>1.1.0</version>
     <packaging>jar</packaging>
 
-    <name>IN2 Authorization VC-Issuer</name>
-    <description>Keycloak plugin to support issuing of verifiable credentials</description>
-    <url>https://dev.azure.com/in2Dome/DOME/_git/in2-dome-keycloak_pluggin</url>
+    <name>IN2 Pre-Authorized Code Keycloak Plugin</name>
+    <description>Keycloak plugin for support of the Pre-Authorized code flow for issuing of verifiable credentials</description>
+    <url>https://github.com/in2workspace/issuer-keycloak-plugin</url>
     <inceptionYear>2023</inceptionYear>
     <organization>
         <name>IN2</name>
