@@ -81,7 +81,7 @@
         <spotbugs.reportFolder>${project.build.directory}/site/spotbugs</spotbugs.reportFolder>
         <!-- sonar -->
         <sonar.projectName>issuer-keycloak-plugin</sonar.projectName>
-        <sonar.projectKey>in2workspace_issuer-keycloak-plugin</sonar.projectKey>
+        <sonar.projectKey>in2workspace_pre-authorized-code-keycloak-plugin</sonar.projectKey>
         <sonar.organization>in2workspace</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
