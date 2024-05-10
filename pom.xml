@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>es.in2.keycloak</groupId>
-    <artifactId>in2-pre-authorized-code-keycloak-plugin</artifactId>
+    <artifactId>issuer-keycloak-plugin</artifactId>
     <version>1.1.0</version>
     <packaging>jar</packaging>
 
