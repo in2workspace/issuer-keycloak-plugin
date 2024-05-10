@@ -31,12 +31,7 @@ import org.jboss.logging.Logger;
 import org.keycloak.OAuth2Constants;
 import org.keycloak.common.util.Time;
 import org.keycloak.events.EventBuilder;
-import org.keycloak.models.AuthenticatedClientSessionModel;
-import org.keycloak.models.ClientModel;
-import org.keycloak.models.KeycloakContext;
-import org.keycloak.models.KeycloakSession;
-import org.keycloak.models.UserModel;
-import org.keycloak.models.UserSessionModel;
+import org.keycloak.models.*;
 import org.keycloak.protocol.oidc.TokenManager;
 import org.keycloak.protocol.oidc.utils.OAuth2Code;
 import org.keycloak.protocol.oidc.utils.OAuth2CodeParser;
@@ -103,8 +98,8 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 
 	private static synchronized void initializeCache() {
 		if (cache == null) {
-			long duration = customDuration != null ? customDuration : getTxCodeLifespan();
-			TimeUnit timeUnit = customTimeUnit != null ? customTimeUnit : getTxCodeLifespanTimeUnit();
+			long duration = customDuration != null ? customDuration : getPreAuthLifespan();
+			TimeUnit timeUnit = customTimeUnit != null ? customTimeUnit : getPreAuthLifespanTimeUnit();
 			cache = CacheBuilder.newBuilder()
 					.expireAfterWrite(duration, timeUnit)
 					.concurrencyLevel(Runtime.getRuntime().availableProcessors())
@@ -258,49 +253,55 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 			getClientsOfType(vcType, format);
 		}
 
-		Instant now = clock.instant();
-		JsonWebToken token = new JsonWebToken()
-				.id(UUID.randomUUID().toString())
-				.subject(getUserModel().getId())
-				.nbf(now.getEpochSecond())
-				//maybe configurable in the future, needs to be short lived
-				.exp(now.plus(Duration.of(300, ChronoUnit.SECONDS)).getEpochSecond());
-		token.setOtherClaims("offeredCredential", new SupportedCredential(vcType, format));
-
 		// Generate pre-authorized code and PIN and save them in cache
 		//todo: generate random tx_code according to TX_CODE_SIZE env variable
+
 		String preAuthorizedCode = generateAuthorizationCode();
 		cache.put(preAuthorizedCode, "1234");
-
 		Grant grant = new Grant(
 				preAuthorizedCode,
 				Grant.TxCode.builder().description(getTxCodeDescription()).length(getTxCodeSize()).build()
 				);
 
-		LOGGER.infof("Responding with offer: %s", grant);
 		return Response.ok()
 				.entity(grant)
 				.header(ACCESS_CONTROL, "*")
+				.type(MediaType.APPLICATION_JSON)
 				.build();
 
 	}
 
 	public String generateAuthorizationCode() {
-
 		AuthenticationManager.AuthResult authResult = getAuthResult();
+
 		UserSessionModel userSessionModel = getUserSessionModel();
 
 		AuthenticatedClientSessionModel clientSessionModel = userSessionModel.
 				getAuthenticatedClientSessionByClient(
 						authResult.getClient().getId());
-		int expiration = Time.currentTime() + getUserSessionModel().getRealm().getAccessCodeLifespan();
 
+		int expiration = Time.currentTime() + (int) TimeUnit.SECONDS.convert(getPreAuthLifespan(), getPreAuthLifespanTimeUnit());
 		String codeId = UUID.randomUUID().toString();
+
 		String nonce = UUID.randomUUID().toString();
+
 		OAuth2Code oAuth2Code = new OAuth2Code(codeId, expiration, nonce, null, null,
 				null, null, userSessionModel.getId());
 
-		return OAuth2CodeParser.persistCode(session, clientSessionModel, oAuth2Code);
+		return customPersistCode(session, clientSessionModel, oAuth2Code, expiration);
+	}
+
+	// Custom method for persisting PreAuthCode with custom expiration time from env variables
+	public static String customPersistCode(KeycloakSession session, AuthenticatedClientSessionModel clientSession, OAuth2Code codeData, int expiration) {
+		SingleUseObjectProvider codeStore = session.singleUseObjects();
+		String key = codeData.getId();
+		if (key == null) {
+			throw new IllegalStateException("ID not present in the data");
+		} else {
+			Map<String, String> serialized = codeData.serializeCode();
+			codeStore.put(key, expiration, serialized);
+			return key + "." + clientSession.getUserSession().getId() + "." + clientSession.getClient().getId();
+		}
 	}
 
 	@POST
@@ -324,7 +325,6 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 		} else {
 			cache.invalidate(preauth);
 		}
-
 		// some (not fully OIDC4VCI compatible) wallets send the preauthorized code as an alternative parameter
 		String codeToUse = Optional.ofNullable(code).orElse(preauth);
 
@@ -340,7 +340,6 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 
 		session.getContext().setRealm(result.getClientSession().getRealm());
 		session.getContext().setClient(result.getClientSession().getClient());
-
 		AccessToken accessToken = new TokenManager().createClientAccessToken(session,
 				result.getClientSession().getRealm(),
 				result.getClientSession().getClient(),
@@ -378,7 +377,6 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 
 	@NotNull
 	private List<ClientModel> getClientsOfType(String vcType, FormatVO format) {
-
 		LOGGER.debugf("Retrieve all clients of type %s, supporting format %s", vcType, format.toString());
 		if (format == FormatVO.JWT_VC) {
 			// backward compat
@@ -424,16 +422,16 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 		return System.getenv("ISSUER_API_URL");
 	}
 	/**
-	 *	Obtains the environment variable TX_CODE_LIFESPAN from the docker-compose environment
+	 *	Obtains the environment variable PRE_AUTH_LIFESPAN from the docker-compose environment
 	 */
-	private static long getTxCodeLifespan() {
-		return Long.parseLong(System.getenv("TX_CODE_LIFESPAN"));
+	private static long getPreAuthLifespan() {
+		return Long.parseLong(System.getenv("PRE_AUTH_LIFESPAN"));
 	}
 	/**
-	 *	Obtains the environment variable TX_CODE_LIFESPAN_TIME_UNIT from the docker-compose environment
+	 *	Obtains the environment variable PRE_AUTH_LIFESPAN_TIME_UNIT from the docker-compose environment
 	 */
-	private static TimeUnit getTxCodeLifespanTimeUnit() {
-		return TimeUnit.valueOf(System.getenv("TX_CODE_LIFESPAN_TIME_UNIT").toUpperCase());
+	private static TimeUnit getPreAuthLifespanTimeUnit() {
+		return TimeUnit.valueOf(System.getenv("PRE_AUTH_LIFESPAN_TIME_UNIT").toUpperCase());
 	}
 	/**
 	 *	Obtains the environment variable TX_CODE_SIZE from the docker-compose environment
