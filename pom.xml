@@ -79,6 +79,8 @@
         <jacoco.reportFolder>${project.build.directory}/site/jacoco</jacoco.reportFolder>
         <jacoco.utReportFile>${jacoco.reportFolder}/test.exec</jacoco.utReportFile>
         <spotbugs.reportFolder>${project.build.directory}/site/spotbugs</spotbugs.reportFolder>
+        <!-- sonar -->
+        <sonar.organization>in2workspace</sonar.organization><sonar.host.url>https://sonarcloud.io</sonar.host.url>
     </properties>
 
     <dependencies>
