@@ -63,6 +63,7 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 	private final String issuerDid;
 	private final AppAuthManager.BearerTokenAuthenticator bearerTokenAuthenticator;
 	private final Clock clock;
+	private static final Random random = new Random();
 	// Optional parameters for cache settings
 	private static Long customDuration = null;
 	private static TimeUnit customTimeUnit = null;
@@ -244,21 +245,19 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 		}
 
 		// Generate pre-authorized code and PIN and save them in cache
-		//todo: generate random tx_code according to TX_CODE_SIZE env variable
-
 		String preAuthorizedCode = generateAuthorizationCode();
-		cache.put(preAuthorizedCode, "1234");
+		String pin = String.valueOf(generateRandomPin());
+		cache.put(preAuthorizedCode, pin);
 		Grant grant = new Grant(
 				preAuthorizedCode,
 				Grant.TxCode.builder().description(getTxCodeDescription()).length(getTxCodeSize()).build()
 				);
-
+		PreAuthCodeResponse preAuthCodeResponse = PreAuthCodeResponse.builder().grant(grant).pin(pin).build();
 		return Response.ok()
-				.entity(grant)
+				.entity(preAuthCodeResponse)
 				.header(ACCESS_CONTROL, "*")
 				.type(MediaType.APPLICATION_JSON)
 				.build();
-
 	}
 
 	public String generateAuthorizationCode() {
@@ -279,6 +278,14 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 				null, null, userSessionModel.getId());
 
 		return customPersistCode(session, clientSessionModel, oAuth2Code, expiration);
+	}
+
+	public int generateRandomPin() {
+		int codeSize = getTxCodeSize();
+		double minValue = Math.pow(10, (double) codeSize - 1);
+		double maxValue = Math.pow(10, codeSize) - 1;
+		// Generate a random number within the specified range.
+		return random.nextInt((int) (maxValue - minValue + 1)) + (int) minValue;
 	}
 
 	// Custom method for persisting PreAuthCode with custom expiration time from env variables
