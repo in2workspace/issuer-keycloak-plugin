@@ -37,6 +37,7 @@ import org.keycloak.services.resource.RealmResourceProvider;
 import org.keycloak.services.util.DefaultClientSessionContext;
 import org.keycloak.urls.UrlType;
 
+import java.security.SecureRandom;
 import java.time.Clock;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -63,7 +64,7 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 	private final String issuerDid;
 	private final AppAuthManager.BearerTokenAuthenticator bearerTokenAuthenticator;
 	private final Clock clock;
-	private static final Random random = new Random();
+	private static final SecureRandom random = new SecureRandom();
 	// Optional parameters for cache settings
 	private static Long customDuration = null;
 	private static TimeUnit customTimeUnit = null;
