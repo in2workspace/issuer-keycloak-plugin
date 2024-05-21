@@ -18,6 +18,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
 import org.fiware.keycloak.oidcvc.model.CredentialIssuerVO;
 import org.fiware.keycloak.oidcvc.model.FormatVO;
 import org.fiware.keycloak.oidcvc.model.SupportedCredentialVO;
@@ -37,6 +38,7 @@ import org.keycloak.services.resource.RealmResourceProvider;
 import org.keycloak.services.util.DefaultClientSessionContext;
 import org.keycloak.urls.UrlType;
 
+import java.nio.ByteBuffer;
 import java.security.SecureRandom;
 import java.time.Clock;
 import java.util.*;
@@ -303,6 +305,22 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 	}
 
 	@POST
+	@Path("/nonce-valid")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.APPLICATION_JSON)
+	public NonceValidationResponse validateNonce(@FormParam("nonce") String nonce){
+		LOGGER.infof("Check validation of nonce: %s", nonce);
+
+		if(cache.getIfPresent(nonce) != null){
+			cache.invalidate(nonce);
+			return new NonceValidationResponse(true);
+		} else {
+			return new NonceValidationResponse(false);
+		}
+	}
+
+
+	@POST
 	@Path("{issuer-did}/token")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -353,9 +371,8 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 		LOGGER.infof("Successfully returned the token: %s.", encryptedToken);
 		String tokenType = "bearer";
 		long expiresIn = accessToken.getExp() - Time.currentTime();
-		List<String> response = sendAccessTokenToIssuerToGetNonce(encryptedToken);
-		String nonce = response.get(0);
-		long nonceExpiresIn = Long.parseLong(response.get(1));
+		String nonce = generateAndSaveNonce();
+		long nonceExpiresIn = (int) TimeUnit.SECONDS.convert(getPreAuthLifespan(), getPreAuthLifespanTimeUnit());
 
 		return Response.ok().entity(new TokenResponse(encryptedToken, tokenType, expiresIn, nonce, nonceExpiresIn))
 				.header(ACCESS_CONTROL, "*")
@@ -450,37 +467,14 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 		return Integer.parseInt(System.getenv("TOKEN_EXPIRATION"));
 	}
 
-	public static List<String> sendAccessTokenToIssuerToGetNonce(String accessToken){
-		try (CloseableHttpClient client = HttpClients.createDefault()) {
-			List<String> nonceList = new ArrayList<>();
-
-			HttpPost httpPost = new HttpPost(getIssuerUrl() + "/api/nonce");
-
-			String jsonBody = "{\"accessToken\":\"" + accessToken + "\"}";
-			StringEntity entity = new StringEntity(jsonBody);
-			httpPost.setEntity(entity);
-
-			httpPost.setHeader("Accept", "application/json");
-			httpPost.setHeader("Content-type", "application/json");
-			httpPost.setHeader("Authorization", "Bearer " + accessToken);
-
-			try (CloseableHttpResponse response = client.execute(httpPost)) {
-				LOGGER.debug(response.toString());
-				String responseBody = response.getEntity() != null ?
-						EntityUtils.toString(response.getEntity()) : "";
-
-				ObjectMapper objectMapper = new ObjectMapper();
-				JsonNode jsonResponse = objectMapper.readTree(responseBody);
-				String nonce = jsonResponse.path("nonce").asText();
-				String nonceExpiresIn = jsonResponse.path("nonce_expires_in").asText();
-
-				nonceList.add(nonce);
-				nonceList.add(nonceExpiresIn);
-			}
-			return nonceList;
-		} catch (Exception e) {
-			throw new ErrorResponseException("Communication failed", "Error sending data to issuer: " + e.getMessage(),
-					Response.Status.BAD_REQUEST);
-		}
+	public static String generateAndSaveNonce(){
+		UUID randomUuid = UUID.randomUUID();
+		ByteBuffer byteBuffer = ByteBuffer.wrap(new byte[16]);
+		byteBuffer.putLong(randomUuid.getMostSignificantBits());
+		byteBuffer.putLong(randomUuid.getLeastSignificantBits());
+		byte[] byteArray = byteBuffer.array();
+		String nonce = Base64.getUrlEncoder().encodeToString(byteArray);
+		cache.put(nonce, nonce);
+		return nonce;
 	}
 }
