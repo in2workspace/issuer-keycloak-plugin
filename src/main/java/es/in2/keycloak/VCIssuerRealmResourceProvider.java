@@ -374,6 +374,8 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 		String nonce = generateAndSaveNonce();
 		long nonceExpiresIn = (int) TimeUnit.SECONDS.convert(getPreAuthLifespan(), getPreAuthLifespanTimeUnit());
 
+		sendPreAuthCodeAndAccessTokenToIssuer(preauth, encryptedToken);
+
 		return Response.ok().entity(new TokenResponse(encryptedToken, tokenType, expiresIn, nonce, nonceExpiresIn))
 				.header(ACCESS_CONTROL, "*")
 				.build();
@@ -476,5 +478,33 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 		String nonce = Base64.getUrlEncoder().encodeToString(byteArray);
 		cache.put(nonce, nonce);
 		return nonce;
+	}
+
+	public static void sendPreAuthCodeAndAccessTokenToIssuer(String preAuthCode, String accessToken){
+		try (CloseableHttpClient client = HttpClients.createDefault()) {
+			HttpPost httpPost = new HttpPost(getIssuerUrl() + "/api/v1/auth-server-nonce");
+
+			String jsonBody = "{\"pre-authorized_code\":\"" + preAuthCode + "\",\"access_token\":\"" + accessToken + "\"}";
+			StringEntity entity = new StringEntity(jsonBody);
+			httpPost.setEntity(entity);
+
+			httpPost.setHeader("Accept", "application/json");
+			httpPost.setHeader("Content-type", "application/json");
+			httpPost.setHeader("Authorization", "Bearer " + accessToken);
+
+			try (CloseableHttpResponse response = client.execute(httpPost)) {
+				int statusCode = response.getStatusLine().getStatusCode();
+				if (statusCode == 200) {
+					LOGGER.debug("Request successful with status code: " + statusCode);
+				} else {
+					LOGGER.error("Unexpected response status: " + statusCode);
+					throw new ErrorResponseException("Unexpected response status", "Received status code: " + statusCode,
+							Response.Status.BAD_REQUEST);
+				}
+			}
+		} catch (Exception e) {
+			throw new ErrorResponseException("Communication failed", "Error sending data to issuer: " + e.getMessage(),
+					Response.Status.BAD_REQUEST);
+		}
 	}
 }
