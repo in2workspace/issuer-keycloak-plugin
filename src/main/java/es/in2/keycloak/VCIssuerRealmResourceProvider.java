@@ -176,7 +176,7 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 		assertIssuerDid(issuerDidParam);
 		String tokenEndpointPattern = "%s/token";
 
-		return Response.ok().entity(new AuthorizationServerMetadata(String.format(tokenEndpointPattern, getIssuer())))
+		return Response.ok().entity(new AuthorizationServerMetadata(String.format(tokenEndpointPattern, getIssuerExternalUrl())))
 				.header(ACCESS_CONTROL, "*").build();
 	}
 
@@ -437,6 +437,12 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 	*/
 	private static String getIssuerUrl() {
 		return System.getenv("ISSUER_API_URL");
+	}
+	/**
+	 *	Obtains the environment variable ISSUER_API_EXTERNAL_URL from the docker-compose environment
+	 */
+	private static String getIssuerExternalUrl() {
+		return System.getenv("ISSUER_API_EXTERNAL_URL");
 	}
 	/**
 	 *	Obtains the environment variable PRE_AUTH_LIFESPAN from the docker-compose environment
