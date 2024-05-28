@@ -488,7 +488,7 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 
 	public static void sendPreAuthCodeAndAccessTokenToIssuer(String preAuthCode, String accessToken){
 		try (CloseableHttpClient client = HttpClients.createDefault()) {
-			HttpPost httpPost = new HttpPost(getIssuerUrl() + "/api/v1/auth-server-nonce");
+			HttpPost httpPost = new HttpPost(getIssuerUrl() + "/api/v1/deferred-credential-metadata/nonce");
 
 			String jsonBody = "{\"pre-authorized_code\":\"" + preAuthCode + "\",\"access_token\":\"" + accessToken + "\"}";
 			StringEntity entity = new StringEntity(jsonBody);
