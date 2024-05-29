@@ -500,7 +500,7 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
 
 			try (CloseableHttpResponse response = client.execute(httpPost)) {
 				int statusCode = response.getStatusLine().getStatusCode();
-				if (statusCode == 200) {
+				if (statusCode == 201) {
 					LOGGER.debug("Request successful with status code: " + statusCode);
 				} else {
 					LOGGER.error("Unexpected response status: " + statusCode);
