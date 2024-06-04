@@ -4,7 +4,15 @@
 ${msg("registerTitle")}
 <#elseif section = "form">
 <form id="kc-register-form" class="${properties.kcFormClass!}" action="${url.registrationAction}" method="post">
-            <input type="hidden" id="register" name="register" h/>
+            <input type="hidden" id="register" name="register"/>
+            <input type="hidden" id="displayName" name="displayName" value="${(displayName!'')}"/>
+            <input type="hidden" id="myid" name="myid" value="${(myid!'')}"/>
+            <input type="hidden" id="cn" name="cn" value="${(cn!'')}"/>
+            <input type="hidden" id="organizationIdentifier" name="organizationIdentifier" value="${(organizationIdentifier!'')}"/>
+            <input type="hidden" id="organization" name="organization" value="${(organization!'')}"/>
+            <input type="hidden" id="country" name="country" value="${(country!'')}"/>
+            <input type="hidden" id="role" name="role" value="${(role!'')}"/>
+            <input type="hidden" id="serialNumber" name="serialNumber" value="${(serialNumber!'')}"/>
 
             <div class="${properties.kcFormGroupClass!} ${messagesPerField.printIfExists('name',properties.kcFormGroupErrorClass!)}">
                 <div class="${properties.kcLabelWrapperClass!}">

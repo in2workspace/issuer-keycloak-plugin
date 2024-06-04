@@ -7,6 +7,7 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+import es.in2.keycloak.model.EidasUser;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
@@ -105,8 +106,8 @@ public class CustomAuthRegisterX509 extends X509ClientCertificateAuthenticator {
                 return;
             }
             if (user == null) {
-                user = this.registerNewUser(context, userCertificate);
-                context.setUser(user);
+                this.registerNewUser(context, userCertificate);
+//                context.setUser(user);
             } else {
                 String bruteForceError;
                 if (this.invalidUser(context, user)) {
@@ -156,11 +157,13 @@ public class CustomAuthRegisterX509 extends X509ClientCertificateAuthenticator {
         if (formData.containsKey("cancel")) {
             context.clearUser();
             context.attempted();
-        } else if (context.getUser() != null) {
-            if (formData.containsKey("register")) {
+        } else if (formData.containsKey("register")) {
                 setUserData(context, formData);
-            }
+                context.success();
+        } else if (context.getUser() != null) {
+
             this.recordX509CertificateAuditDataViaContextEvent(context);
+
             context.success();
         } else {
             context.attempted();
@@ -168,15 +171,38 @@ public class CustomAuthRegisterX509 extends X509ClientCertificateAuthenticator {
     }
 
     private void setUserData(AuthenticationFlowContext context, MultivaluedMap<String, String> formData) {
-        UserModel user = context.getUser();
+        // create user
         String email = formData.getFirst("email");
+        String cn = formData.getFirst("cn");
+        String organization = formData.getFirst("organization");
+        String organizationIdentifier = formData.getFirst("organizationIdentifier");
+        String myid = formData.getFirst("myid");
+        String serialNumber = formData.getFirst("serialNumber");
+        String country = formData.getFirst("country");
+        String role = formData.getFirst("role");
+
+        UserModel user = context.getSession().users().addUser(context.getRealm(), email);
+
         user.setEmail(email);
         user.setUsername(email);
         user.setFirstName(formData.getFirst("firstName"));
         user.setLastName(formData.getFirst("lastName"));
+        user.setSingleAttribute("displayName", user.getFirstName() + " " + user.getLastName());
+        user.setSingleAttribute("myid", myid);
+        user.setSingleAttribute("cn", cn);
+        user.setSingleAttribute("organizationIdentifier", organizationIdentifier);
+        user.setSingleAttribute("o", organization);
+        user.setSingleAttribute("c", country);
+        user.setSingleAttribute("serialNumber", serialNumber);
+
+        user.grantRole(context.getRealm().getRole(role));
+
+        user.setEnabled(true);
+
+        context.setUser(user);
     }
 
-    private Response createForm(AuthenticationFlowContext context, UserModel user) {
+    private Response createForm(AuthenticationFlowContext context, EidasUser user) {
         //mock dummy user in context.getUser().getUsername()
         context.setUser(context.getSession().users().getUserByUsername(context.getRealm(),"-notExistingUser-"));
 
@@ -187,11 +213,18 @@ public class CustomAuthRegisterX509 extends X509ClientCertificateAuthenticator {
         form.setAttribute("lastName", user.getLastName());
         form.setAttribute("email", user.getEmail());
         form.setAttribute("username", user.getUsername());
+        form.setAttribute("myid", user.getMyid());
+        form.setAttribute("cn", user.getCn());
+        form.setAttribute("organizationIdentifier", user.getOrganizationIdentifier());
+        form.setAttribute("organization", user.getOrganization());
+        form.setAttribute("country", user.getCountry());
+        form.setAttribute("serialNumber", user.getSerialNumber());
+        form.setAttribute("role", user.getRolName());
 
         return form.createForm("in2-login.ftl");
     }
 
-    private UserModel registerNewUser(AuthenticationFlowContext context, X509Certificate[] userIdentity) {
+    private void registerNewUser(AuthenticationFlowContext context, X509Certificate[] userIdentity) {
 
         log.info("Registering new user");
         String name;
@@ -211,28 +244,29 @@ public class CustomAuthRegisterX509 extends X509ClientCertificateAuthenticator {
         myid = getMyid(userIdentity);
         log.info("name: {}, lastName: {}, serialNumber: {}", name, lastName, myid);
 
-        UserModel user = context.getSession().users().addUser(context.getRealm(), myid);
+        EidasUser user = EidasUser.builder().build();
+        user.setUsername(email);
         user.setFirstName(name);
         user.setLastName(lastName);
 
-        user.setSingleAttribute("displayName", name + " " + lastName);
-        user.setSingleAttribute("myid", myid);
-        user.setSingleAttribute("cn", cn);
-        user.setSingleAttribute("organizationIdentifier", organizationIdentifier);
-        user.setSingleAttribute("o", organization);
-        user.setSingleAttribute("c", country);
-        user.setSingleAttribute("serialNumber", serialNumber);
+        user.setDisplayName(name + " " + lastName);
+        user.setMyid(myid);
+        user.setCn(cn);
+        user.setOrganizationIdentifier(organizationIdentifier);
+        user.setOrganization(organization);
+        user.setCountry(country);
+        user.setSerialNumber(serialNumber);
         user.setEmail(email);
 
-        user.setEnabled(true);
+//        user.setEnabled(true);
         if (email != null && !email.isEmpty()) {
-            user.grantRole(context.getRealm().getRole("signer"));
+            user.setRolName("signer");
         } else {
-            user.grantRole(context.getRealm().getRole("mandator"));
+            user.setRolName("mandator");
         }
         context.challenge(createForm(context, user));
 
-        return user;
+//        return user;
     }
 
     private String getSerialNumber(X500Principal principal) {
