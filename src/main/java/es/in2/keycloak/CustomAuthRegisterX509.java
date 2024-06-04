@@ -157,10 +157,8 @@ public class CustomAuthRegisterX509 extends X509ClientCertificateAuthenticator {
             context.clearUser();
             context.attempted();
         } else if (context.getUser() != null) {
-            // TODO: Settear datos usuario
             if (formData.containsKey("register")) {
                 setUserData(context, formData);
-
             }
             this.recordX509CertificateAuditDataViaContextEvent(context);
             context.success();
@@ -171,8 +169,9 @@ public class CustomAuthRegisterX509 extends X509ClientCertificateAuthenticator {
 
     private void setUserData(AuthenticationFlowContext context, MultivaluedMap<String, String> formData) {
         UserModel user = context.getUser();
-        user.setEmail(formData.getFirst("email"));
-        user.setUsername(formData.getFirst("username"));
+        String email = formData.getFirst("email");
+        user.setEmail(email);
+        user.setUsername(email);
         user.setFirstName(formData.getFirst("firstName"));
         user.setLastName(formData.getFirst("lastName"));
     }
@@ -198,7 +197,6 @@ public class CustomAuthRegisterX509 extends X509ClientCertificateAuthenticator {
         String name;
         String lastName;
         String email;
-        String username;
         String myid;
         X500Principal principal = userIdentity[0].getSubjectX500Principal();
         log.info("principal: {}", principal.toString());
