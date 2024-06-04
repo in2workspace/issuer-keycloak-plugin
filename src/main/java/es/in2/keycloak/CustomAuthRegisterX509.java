@@ -104,7 +104,7 @@ public class CustomAuthRegisterX509 extends X509ClientCertificateAuthenticator {
                 context.attempted();
                 return;
             }
-            if (user == null || user.getEmail().isBlank()) {
+            if (user == null) {
                 user = this.registerNewUser(context, userCertificate);
                 context.setUser(user);
             } else {
