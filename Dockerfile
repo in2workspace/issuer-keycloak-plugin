@@ -25,8 +25,8 @@ ENV VCISSUER_ISSUER_DID="did:key:z6MkqmaCT2JqdUtLeKah7tEVfNXtDXtQyj4yxEgV11Y5CqU
 ENV VCISSUER_ISSUER_KEY_FILE="/opt/keycloak/providers/keyfile.json"
 
 #RUN bash -c 'touch /app/in2-issuer-backend-0.2.0-SNAPSHOT.jar'
-COPY azure/applicationinsights-agent-3.4.8.jar  /build/applicationinsights-agent-3.4.8.jar
-COPY azure/applicationinsights.json /build/applicationinsights.json
+#COPY azure/applicationinsights-agent-3.4.8.jar  /build/applicationinsights-agent-3.4.8.jar
+#COPY azure/applicationinsights.json /build/applicationinsights.json
 
-EXPOSE 8088
+EXPOSE 8080
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start-dev", "--health-enabled=true","--metrics-enabled=true", "--log-level=INFO", "--import-realm"]
