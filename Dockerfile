@@ -11,8 +11,6 @@ RUN mvn clean install
 
 # Segunda etapa: Creación de la imagen de Keycloak
 FROM quay.io/keycloak/keycloak:24.0.1
-
-
 #https://github.com/keycloak/keycloak/issues/17320#issuecomment-1642174124
 USER root
 RUN ["sed", "-i", "s/SHA1, //g", "/usr/share/crypto-policies/DEFAULT/java.txt"]
@@ -27,7 +25,8 @@ ENV VCISSUER_ISSUER_DID="did:key:z6MkqmaCT2JqdUtLeKah7tEVfNXtDXtQyj4yxEgV11Y5CqU
 ENV VCISSUER_ISSUER_KEY_FILE="/opt/keycloak/providers/keyfile.json"
 
 #RUN bash -c 'touch /app/in2-issuer-backend-0.2.0-SNAPSHOT.jar'
-COPY applicationinsights-agent-3.4.8.jar  /build/applicationinsights-agent-3.4.8.jar
-COPY applicationinsights.json /build/applicationinsights.json
+COPY azure/applicationinsights-agent-3.4.8.jar  /build/applicationinsights-agent-3.4.8.jar
+COPY azure/applicationinsights.json /build/applicationinsights.json
+
 EXPOSE 8088
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh", "start-dev", "--health-enabled=true","--metrics-enabled=true", "--log-level=INFO", "--import-realm"]

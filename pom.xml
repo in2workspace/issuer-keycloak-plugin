@@ -11,7 +11,7 @@
     <name>IN2 Pre-Authorized Code Keycloak Plugin</name>
     <description>Keycloak plugin for support of the Pre-Authorized code flow for issuing of verifiable credentials</description>
     <url>https://github.com/in2workspace/issuer-keycloak-plugin</url>
-    <inceptionYear>2023</inceptionYear>
+    <inceptionYear>2024</inceptionYear>
     <organization>
         <name>IN2</name>
         <url>https://in2.es</url>
@@ -32,19 +32,19 @@
 
         <!-- project info -->
         <project.author.name>IN2</project.author.name>
-        <project.author.email>contacto@in2.es</project.author.email>
+        <project.author.email>domesupport@in2.es</project.author.email>
         <project.description>IN2 Authorization VC-Issuer is an extension to keycloak, that allows the custom
             OAUTH 2.0 for users in a VC flow.
         </project.description>
         <project.summary>Keycloak plugin IN2 Authorization Verifiable Credentials.</project.summary>
-        <project.url>https://dev.azure.com/in2Dome/DOME/_git/in2-dome-keycloak_pluggin</project.url>
+        <project.url>https://github.com/in2workspace/issuer-keycloak-plugin</project.url>
         <project.license.name>GNU Affero General Public License v3.0</project.license.name>
         <project.license.identifier>Apache License 2.0</project.license.identifier>
         <project.license.url>https://www.apache.org/licenses/LICENSE-2.0</project.license.url>
         <project.title>IN2 Authorization VC-Issuer</project.title>
-        <project.vendor>IN2 Ingenieria de la INformacion</project.vendor>
-        <project.contact.domain>in2.es</project.contact.domain>
-        <project.contact.email>contacto@in2.es</project.contact.email>
+        <project.vendor>IN2 Ingeniería de la Información</project.vendor>
+        <project.contact.domain>https://in2.es</project.contact.domain>
+        <project.contact.email>domesupport@in2.es</project.contact.email>
 
         <!-- frontend build -->
         <version.com.github.eirslett.frontend-maven-plugin>1.12.1</version.com.github.eirslett.frontend-maven-plugin>
@@ -58,6 +58,7 @@
 
         <!-- keycloak -->
         <version.org.keycloak.libs>24.0.1</version.org.keycloak.libs>
+
         <!-- version to be used for tests - can be different from the libs -->
         <keycloak.version>24.0.1</keycloak.version>
         <keycloak.image>quay.io/keycloak/keycloak:${keycloak.version}</keycloak.image>
@@ -79,8 +80,9 @@
         <jacoco.reportFolder>${project.build.directory}/site/jacoco</jacoco.reportFolder>
         <jacoco.utReportFile>${jacoco.reportFolder}/test.exec</jacoco.utReportFile>
         <spotbugs.reportFolder>${project.build.directory}/site/spotbugs</spotbugs.reportFolder>
+
         <!-- sonar -->
-        <sonar.projectName>issuer-keycloak-plugin</sonar.projectName>
+        <sonar.projectName>Issuer Keycloak Plugin</sonar.projectName>
         <sonar.projectKey>in2workspace_pre-authorized-code-keycloak-plugin</sonar.projectKey>
         <sonar.organization>in2workspace</sonar.organization>
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
@@ -91,7 +93,7 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>31.0.1-android</version>
+            <version>32.0.0-android</version>
         </dependency>
         <dependency>
             <groupId>org.infinispan</groupId>
@@ -104,21 +106,18 @@
             <artifactId>jakarta.enterprise.cdi-api</artifactId>
             <version>4.0.1</version>
         </dependency>
-
         <!-- lazy dev -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>${version.org.projectlombok}</version>
         </dependency>
-
         <dependency>
             <groupId>com.google.auto.service</groupId>
             <artifactId>auto-service</artifactId>
             <version>1.0.1</version>
             <optional>true</optional>
         </dependency>
-
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-server-spi</artifactId>
@@ -166,7 +165,6 @@
             <artifactId>swagger-annotations</artifactId>
             <version>${version.io.swagger.swagger-annotations}</version>
         </dependency>
-
         <!-- Testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -198,19 +196,16 @@
             <version>${version.org.keycloak.keycloak-admin-client}</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>5.9.2</version>
         </dependency>
-
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-common</artifactId>
             <version>3.1.2</version>
         </dependency>
-
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>okhttp</artifactId>
@@ -221,19 +216,16 @@
             <artifactId>logging-interceptor</artifactId>
             <version>4.11.0</version>
         </dependency>
-
         <dependency>
             <groupId>io.gsonfire</groupId>
             <artifactId>gson-fire</artifactId>
             <version>1.9.0</version>
         </dependency>
-
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
             <version>4.7.6.Final</version>
         </dependency>
-
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-multipart-provider</artifactId>
@@ -290,7 +282,6 @@
             <artifactId>jakarta.annotation-api</artifactId>
             <version>1.3.5</version>
         </dependency>
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -302,7 +293,6 @@
             <version>20.0.5</version>
         </dependency>
         <!-- test dependencies -->
-
     </dependencies>
 
     <build>
@@ -383,7 +373,6 @@
             <!-- copy frontend to the build dir to keep all the npm dependencies cleanable -->
             <!-- clean plugin is executed in process-resources phase, to remove the theme folder after copying the -->
             <!-- results to classes/ to improve performance of the following phases -->
-
             <!-- copy project dependencies -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
