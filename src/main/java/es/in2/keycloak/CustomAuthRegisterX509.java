@@ -325,14 +325,14 @@ public class CustomAuthRegisterX509 extends X509ClientCertificateAuthenticator {
 
     @NotNull
     private static String getMyid(X509Certificate[] userIdentity) {
-        String myid;
-        // Get Serial Number as myid
-        StringBuilder serialNumber = new StringBuilder(userIdentity[0].getSerialNumber().toString(16));
-        while (serialNumber.length() < 16) {
-            serialNumber.insert(0, "0");
+        // Get the raw serial number bytes directly from the certificate.
+        byte[] serialNumberBytes = userIdentity[0].getSerialNumber().toByteArray();
+        // Convert the byte array to a hexadecimal string.
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : serialNumberBytes) {
+            hexString.append(String.format("%02x", b));
         }
-        myid = serialNumber.toString();
-        return myid;
+        return hexString.toString();
     }
 
     @Nullable
