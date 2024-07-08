@@ -1,6 +1,7 @@
 package es.in2.keycloak;
 
 import com.google.auto.service.AutoService;
+import es.in2.keycloak.controller.SIOP2ClientRegistrationProvider;
 import org.keycloak.Config;
 import org.keycloak.events.EventBuilder;
 import org.keycloak.models.ClientModel;

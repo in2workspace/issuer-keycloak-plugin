@@ -1,5 +1,8 @@
-package es.in2.keycloak;
+package es.in2.keycloak.controller;
 
+import es.in2.keycloak.SIOP2Client;
+import es.in2.keycloak.SIOP2ClientRegistrationContext;
+import es.in2.keycloak.SIOP2LoginProtocolFactory;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -146,4 +149,5 @@ public class SIOP2ClientRegistrationProvider extends AbstractClientRegistrationP
 								.toMap(e -> String.format("%s%s", prefix, e.getKey()),
 										Map.Entry::getValue));
 	}
+
 }
