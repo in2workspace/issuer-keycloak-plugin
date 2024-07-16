@@ -9,14 +9,28 @@
 Issuer Keycloak Plugin is a service that allows to build the identity provider solution for the Issuer application. It composes of an offical Keycloak image and integrate a custom layer with tailored logic to comply with the requierement of the technical specification [OpenID4VCI DOME profile](https://dome-marketplace.github.io/OpenID4VCI-DOMEprofile/openid-4-verifiable-credential-issuance-wg-draft.html) (Issuer-initiated flow)
 
 # Installation
+As key part of the Credential Issuer solution the Issuer Keycloak Plugin is designed to work with the following dependencies:
+## Dependencies
+To utilize the Credential Issuer, you will need the following components:
 
+
+- **Issuer-UI**
+- **Issuer-API**
+- **Issuer Keycloak Plugin**
+- **Postgres Database**
+- **SMTP Email Server**
+
+For each dependency, you can refer to their respective repositories for detailed setup instructions.
 We offer a Docker image to run the application. You can find it in [Docker Hub](https://hub.docker.com/u/in2workspace).
-- Issuer Keycloak Plugin
-- Postgres
 
 Here, you can find an example of how to run the application with all the required services and configuration.
+### Issuer UI
+Issuer UI is the user interface for the Credential Issuer. Refer to the [Issuer UI Documentation](https://github.com/in2workspace/issuer-ui) for more information on configuration variables.
 
-## Running the application
+### Issuer API
+The Server application of the Credential Issuer. Refer to the [Issuer API Documentation](https://github.com/in2workspace/issuer-api) for more information on configuration variables.
+
+### Issuer Keycloak Plugin
 The application needs key custom environment variables to be configured
 - ISSUER_API_URL: internal Issuer API url
 - ISSUER_API_EXTERNAL_URL external Issuer API url
@@ -51,7 +65,7 @@ docker run -d \
 ```
 You can find more information in the official [Keycloak documentation](https://www.keycloak.org/documentation)
 
-### Postgres
+### Postgres Database
 Postgres is used as the database for Keycloak.
 You can find more information in the [official documentation](https://www.postgresql.org/docs/).
 #### Example of a typical configuration:
@@ -69,6 +83,10 @@ Ensure you have the volume postgres_data created before running the postgres con
 ```bash
 docker volume create postgres_data
 ```
+
+### SMTP Email Server
+An SMTP Email Server of your choice. It must support StartTLS for a secure connection. Refer to the [Issuer API Documentation](https://github.com/in2workspace/issuer-api) for more information
+
 ## Contribution
 
 ### How to contribute
