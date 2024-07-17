@@ -88,8 +88,7 @@
         <sonar.host.url>https://sonarcloud.io</sonar.host.url>
 
         <!-- This classes need more test and should be removed from the sonar exclusions -->
-        <sonar.coverage.exclusions>src/main/java/es/in2/keycloak/VCIssuerRealmResourceProvider.java</sonar.coverage.exclusions>
-        <sonar.coverage.exclusions>src/main/java/es/in2/keycloak/controller/SIOP2ClientRegistrationProvider.java</sonar.coverage.exclusions>
+        <sonar.coverage.exclusions>src/main/java/es/in2/keycloak/VCIssuerRealmResourceProvider.java,src/main/java/es/in2/keycloak/controller/SIOP2ClientRegistrationProvider.java</sonar.coverage.exclusions>
 
     </properties>
 
