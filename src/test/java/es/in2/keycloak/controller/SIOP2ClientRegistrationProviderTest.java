@@ -1,6 +1,8 @@
-package es.in2.keycloak;
+package es.in2.keycloak.controller;
 
-import es.in2.keycloak.controller.SIOP2ClientRegistrationProvider;
+import es.in2.keycloak.ExpectedResult;
+import es.in2.keycloak.SIOP2Client;
+import es.in2.keycloak.SIOP2LoginProtocolFactory;
 import es.in2.keycloak.model.SupportedCredential;
 import lombok.extern.slf4j.Slf4j;
 import org.fiware.keycloak.oidcvc.model.FormatVO;
@@ -42,16 +44,16 @@ class SIOP2ClientRegistrationProviderTest {
 		}
 	}
 
-//	@DisplayName("Validate that SIOP-2 clients are properly translated to ClientRepresentations")
-//	@ParameterizedTest
-//	@MethodSource("provideSIOP2Clients")
-//	void testToClientRepresentation(SIOP2Client toTest, ExpectedResult<ClientRepresentation> expectedResult)
-//			throws IllegalAccessException {
-//		String errorMessage = compare(expectedResult.getExpectedResult(),
-//				SIOP2ClientRegistrationProvider.toClientRepresentation(toTest));
-//		assertNull(errorMessage, String.format("%s - %s",
-//				expectedResult.getMessage(), errorMessage));
-//	}
+	@DisplayName("Validate that SIOP-2 clients are properly translated to ClientRepresentations")
+	@ParameterizedTest
+	@MethodSource("provideSIOP2Clients")
+	void testToClientRepresentation(SIOP2Client toTest, ExpectedResult<ClientRepresentation> expectedResult)
+			throws IllegalAccessException {
+		String errorMessage = compare(expectedResult.getExpectedResult(),
+				SIOP2ClientRegistrationProvider.toClientRepresentation(toTest));
+		assertNull(errorMessage, String.format("%s - %s",
+				expectedResult.getMessage(), errorMessage));
+	}
 
 	private static Stream<Arguments> provideSIOP2Clients() {
 		return Stream.of(
