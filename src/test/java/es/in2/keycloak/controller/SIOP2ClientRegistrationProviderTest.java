@@ -1,5 +1,8 @@
-package es.in2.keycloak;
+package es.in2.keycloak.controller;
 
+import es.in2.keycloak.ExpectedResult;
+import es.in2.keycloak.SIOP2Client;
+import es.in2.keycloak.SIOP2LoginProtocolFactory;
 import es.in2.keycloak.model.SupportedCredential;
 import lombok.extern.slf4j.Slf4j;
 import org.fiware.keycloak.oidcvc.model.FormatVO;
@@ -17,7 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import static es.in2.keycloak.SIOP2ClientRegistrationProvider.EXPIRY_IN_MIN;
+import static es.in2.keycloak.controller.SIOP2ClientRegistrationProvider.EXPIRY_IN_MIN;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.fail;
 

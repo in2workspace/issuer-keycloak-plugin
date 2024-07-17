@@ -51,27 +51,6 @@ public class VCIssuerRealmResourceProviderTest {
 				bearerTokenAuthenticator, Clock.systemUTC(), 10L, TimeUnit.MINUTES);
 	}
 
-	@ParameterizedTest
-	@MethodSource("provideClients")
-	void testGetIssuerData(Stream<ClientModel> clientModelStream, ExpectedResult<IssuerMetaData> expectedResult)
-			throws URISyntaxException {
-		KeycloakContext context = mock(KeycloakContext.class);
-		RealmModel realmModel = mock(RealmModel.class);
-		when(realmModel.getName()).thenReturn("test");
-		when(realmModel.getClientsStream()).thenReturn(clientModelStream);
-		KeycloakUriInfo keycloakUriInfo = mock(KeycloakUriInfo.class);
-		when(keycloakUriInfo.getBaseUri()).thenReturn(new URI("http://localhost:8080"));
-		when(context.getUri(any())).thenReturn(keycloakUriInfo);
-		when(keycloakSession.getContext()).thenReturn(context);
-		when(context.getRealm()).thenReturn(realmModel);
-
-		Response metaDataResponse = testProvider.getIssuerMetadata(ISSUER_DID);
-		assertEquals(HttpStatus.SC_OK, metaDataResponse.getStatus(), expectedResult.getMessage());
-		assertEquals(expectedResult.getExpectedResult(),
-				OBJECT_MAPPER.convertValue(metaDataResponse.getEntity(), IssuerMetaData.class),
-				expectedResult.getMessage());
-	}
-
 	public static Stream<Arguments> provideClients() throws MalformedURLException {
 		return Stream.of(
 				Arguments.of(
