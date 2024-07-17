@@ -140,26 +140,6 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
         return Response.status(Response.Status.BAD_REQUEST).entity(new ErrorResponse(errorType.getValue())).build();
     }
 
-//	@GET
-//	@Path("{issuer-did}/.well-known/openid-credential-issuer")
-//	@Produces({ MediaType.APPLICATION_JSON })
-//	@ApiOperation(value = "Return the issuer metadata", notes = "https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html#name-credential-issuer-metadata-", tags = {})
-//	@ApiResponses(value = {
-//			@ApiResponse(code = 200, message = "The credentials issuer metadata", response = CredentialIssuerVO.class) })
-//	public Response getIssuerMetadata(@PathParam("issuer-did") String issuerDidParam) {
-//		LOGGER.info("Retrieve issuer meta data");
-//		assertIssuerDid(issuerDidParam);
-//		KeycloakContext currentContext = session.getContext();
-//		String authorizationEndpointPattern = "%s/.well-known/openid-configuration";
-//
-//		return Response.ok().entity(new CredentialIssuerVO()
-//						.credentialIssuer(getIssuer())
-//						.authorizationServer(String.format(authorizationEndpointPattern, getIssuer()))
-//						.credentialEndpoint(getCredentialEndpoint())
-//						.credentialsSupported(getSupportedCredentials(currentContext)))
-//				.header(ACCESS_CONTROL, "*").build();
-//	}
-
     @GET
     @Path("{issuer-did}/.well-known/openid-configuration")
     @Produces({MediaType.APPLICATION_JSON})
