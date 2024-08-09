@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -26,5 +28,8 @@ public class TokenResponse {
 
 	@JsonProperty("c_nonce_expires_in")
 	private Long nonceExpiresIn;
+
+	@JsonProperty("authorization_details")
+	List<AuthorizationDetail> authorizationDetails;
 }
 
