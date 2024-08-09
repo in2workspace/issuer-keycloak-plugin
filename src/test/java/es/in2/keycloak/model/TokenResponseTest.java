@@ -2,6 +2,8 @@ package es.in2.keycloak.model;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
@@ -18,7 +20,7 @@ class TokenResponseTest {
 
     @Test
     void testAllArgsConstructor() {
-        TokenResponse tokenResponse = new TokenResponse("accessTokenValue", "tokenTypeValue", 3600L, "nonceValue", 600L);
+        TokenResponse tokenResponse = new TokenResponse("accessTokenValue", "tokenTypeValue", 3600L, "nonceValue", 600L, List.of(new AuthorizationDetail("", "LEARCredentialEmployee"), new AuthorizationDetail("", "VerifiableCertification")));
 
         assertEquals("accessTokenValue", tokenResponse.getAccessToken());
         assertEquals("tokenTypeValue", tokenResponse.getTokenType());
@@ -57,9 +59,9 @@ class TokenResponseTest {
         String nonce2 = "nonce2";
         Long nonceExpiresIn2 = 1200L;
 
-        TokenResponse tokenResponse1 = new TokenResponse(accessToken1, tokenType1, expiresIn1, nonce1, nonceExpiresIn1);
-        TokenResponse tokenResponse2 = new TokenResponse(accessToken1, tokenType1, expiresIn1, nonce1, nonceExpiresIn1);
-        TokenResponse tokenResponse3 = new TokenResponse(accessToken2, tokenType2, expiresIn2, nonce2, nonceExpiresIn2);
+        TokenResponse tokenResponse1 = new TokenResponse(accessToken1, tokenType1, expiresIn1, nonce1, nonceExpiresIn1, List.of(new AuthorizationDetail("", "LEARCredentialEmployee"), new AuthorizationDetail("", "VerifiableCertification")));
+        TokenResponse tokenResponse2 = new TokenResponse(accessToken1, tokenType1, expiresIn1, nonce1, nonceExpiresIn1, List.of(new AuthorizationDetail("", "LEARCredentialEmployee"), new AuthorizationDetail("", "VerifiableCertification")));
+        TokenResponse tokenResponse3 = new TokenResponse(accessToken2, tokenType2, expiresIn2, nonce2, nonceExpiresIn2, List.of(new AuthorizationDetail("", "LEARCredentialEmployee"), new AuthorizationDetail("", "VerifiableCertification")));
 
         assertEquals(tokenResponse1, tokenResponse2);
         assertEquals(tokenResponse1.hashCode(), tokenResponse2.hashCode());
@@ -78,10 +80,18 @@ class TokenResponseTest {
         String nonce = "nonce";
         Long nonceExpiresIn = 600L;
 
-        TokenResponse tokenResponse = new TokenResponse(accessToken, tokenType, expiresIn, nonce, nonceExpiresIn);
+        TokenResponse tokenResponse = new TokenResponse(accessToken, tokenType, expiresIn, nonce, nonceExpiresIn, List.of(new AuthorizationDetail("", "LEARCredentialEmployee"), new AuthorizationDetail("", "VerifiableCertification")));
 
-        String expectedToString = "TokenResponse(accessToken=" + accessToken + ", tokenType=" + tokenType +
-                ", expiresIn=" + expiresIn + ", nonce=" + nonce + ", nonceExpiresIn=" + nonceExpiresIn + ")";
+        String expectedToString = "TokenResponse(accessToken=" + accessToken +
+                ", tokenType=" + tokenType +
+                ", expiresIn=" + expiresIn +
+                ", nonce=" + nonce +
+                ", nonceExpiresIn=" + nonceExpiresIn +
+                ", authorizationDetails=" + List.of(
+                new AuthorizationDetail("", "LEARCredentialEmployee").toString(),
+                new AuthorizationDetail("", "VerifiableCertification").toString()
+        ).toString() +
+                ")";
 
         assertEquals(expectedToString, tokenResponse.toString());
     }

@@ -364,8 +364,9 @@ public class VCIssuerRealmResourceProvider implements RealmResourceProvider {
         long nonceExpiresIn = (int) TimeUnit.SECONDS.convert(getPreAuthLifespan(), getPreAuthLifespanTimeUnit());
 
         sendPreAuthCodeAndAccessTokenToIssuer(preauth, encryptedToken);
-
-        return Response.ok().entity(new TokenResponse(encryptedToken, tokenType, expiresIn, nonce, nonceExpiresIn))
+        AuthorizationDetail lear = new AuthorizationDetail("", "LEARCredentialEmployee");
+        AuthorizationDetail verifiableCertification = new AuthorizationDetail("", "VerifiableCertification");
+        return Response.ok().entity(new TokenResponse(encryptedToken, tokenType, expiresIn, nonce, nonceExpiresIn, List.of(lear, verifiableCertification)))
                 .header(ACCESS_CONTROL, "*")
                 .header("Content-Type",  MediaType.APPLICATION_JSON)
                 .build();
